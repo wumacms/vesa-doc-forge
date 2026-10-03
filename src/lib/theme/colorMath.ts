@@ -7,18 +7,25 @@
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
-/** 解析 oklch("oklch(0.6723 0.1606 244.99)") / "oklch(0.5 0.1 200 / 0.5)" 为 [L,C,H,A] */
+/**
+ * 解析 oklch("oklch(0.6723 0.1606 244.99)") / "oklch(0.5 0.1 200 / 0.5)" 为 [L,C,H,A]。
+ * 必须同时兼容两种序列化形式：
+ * - dev（未压缩 CSS）：oklch(0.1884 0.0128 248.5103)
+ * - 生产构建（CSS 压缩器会改写颜色）：oklch(18.84% .0128 248.51)
+ * 带 % 的分量按百分比语义换算（÷100）；不带 % 的 L 若 >1 也按百分比兜底处理，
+ * 防止解析出的亮度被 clamp 成纯白/纯黑导致编辑器文字“隐身”。
+ */
 function parseOklch(input: string): [number, number, number, number] | null {
   const m = input.match(
-    /oklch\(\s*([\d.]+)(?:%)?\s+([\d.]+)\s+([\d.]+)(?:deg)?\s*(?:\/\s*([\d.]+)(?:%)?)?\s*\)/i,
+    /oklch\(\s*([\d.]+)(%?)\s+([\d.]+)(%?)\s+([\d.]+)(?:deg)?\s*(?:\/\s*([\d.]+)(%?)\s*)?\)/i,
   );
   if (!m) return null;
-  return [
-    parseFloat(m[1]),
-    parseFloat(m[2]),
-    parseFloat(m[3]),
-    m[4] !== undefined ? parseFloat(m[4]) : 1,
-  ];
+  let L = parseFloat(m[1]) / (m[2] ? 100 : 1);
+  if (L > 1) L /= 100; // 兜底：裸数值但按百分比书写的异常输入
+  const C = parseFloat(m[3]) / (m[4] ? 100 : 1);
+  const H = parseFloat(m[5]);
+  const A = m[6] !== undefined ? parseFloat(m[6]) / (m[7] ? 100 : 1) : 1;
+  return [L, C, H, A];
 }
 
 function oklchToLinearRgb(L: number, C: number, H: number): [number, number, number] {
