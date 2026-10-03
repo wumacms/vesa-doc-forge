@@ -32,6 +32,12 @@ var ss=makeStorage();
 Object.defineProperty(window,'sessionStorage',{value:ss,configurable:true});
 }
 }catch(e){}
+window.addEventListener('message',function(e){
+var d=e.data;
+if(d&&d.source==='vesadocforge'&&d.action==='scroll'){
+window.scrollTo({top:d.to==='top'?0:document.documentElement.scrollHeight,behavior:'smooth'});
+}
+});
 })();</script>`;
 
 /** 把垫片插到文档最前面，保证晚于它的页面脚本先拿到 Storage */

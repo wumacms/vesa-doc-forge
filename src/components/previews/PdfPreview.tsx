@@ -2,13 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ZoomIn, ZoomOut, ChevronLeft, ChevronRight, FileWarning } from "lucide-react";
 import type { PreviewProps } from "@/types";
 import { createModuleWorker } from "@/lib/cleanWorker";
-
-function b64ToBytes(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
-}
+import { base64ToBytes } from "@/lib/clipboard";
 
 export default function PdfPreview({ file }: PreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -36,7 +30,7 @@ export default function PdfPreview({ file }: PreviewProps) {
         } catch {
           worker = null;
         }
-        const data = b64ToBytes(file.content.trim());
+        const data = base64ToBytes(file.content.trim());
         const doc = await pdfjs.getDocument({ data }).promise;
         if (cancelled) {
           doc.destroy();
@@ -149,7 +143,10 @@ export default function PdfPreview({ file }: PreviewProps) {
           <ZoomIn className="h-4 w-4" />
         </button>
       </div>
-      <div className="flex flex-1 items-start justify-center overflow-auto bg-muted/40 p-6">
+      <div
+        data-doc-scroll
+        className="flex flex-1 items-start justify-center overflow-auto bg-muted/40 p-6"
+      >
         <canvas
           ref={canvasRef}
           className=" bg-white shadow-md"

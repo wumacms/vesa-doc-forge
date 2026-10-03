@@ -9,6 +9,10 @@ import {
   Upload,
   FolderUp,
   PanelLeft,
+  ArrowUpToLine,
+  ArrowDownToLine,
+  Copy,
+  Download,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
@@ -52,6 +56,8 @@ import {
 } from "@/lib/workspace";
 import { setupMonaco, monaco } from "@/lib/monacoSetup";
 import { getPref, setPref } from "@/lib/storage";
+import { copyText } from "@/lib/clipboard";
+import { downloadDocument } from "@/lib/download";
 import { cn } from "@/lib/utils";
 
 const VIEW_MODE_KEY = "vesadocforge:view-mode";
@@ -155,6 +161,8 @@ export default function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const mainRef = useRef<HTMLElement>(null);
+  /** 预览区外层滚动容器（Markdown/代码等直接在其中滚动） */
+  const previewScrollRef = useRef<HTMLDivElement>(null);
   const [dragOver, setDragOver] = useState(false);
 
   /* ---------- 加载持久化数据 ---------- */
@@ -234,6 +242,99 @@ export default function App() {
     const host = mainRef.current?.querySelector(`#oc-${index}`);
     if (host) host.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  /* ---------- 文档工具栏：顶部 / 底部 / 复制 / 下载 ---------- */
+
+  /** 滚动预览区：外层容器自身可滚（Markdown/代码等）；否则找 data-doc-scroll 声明的内层滚动区（PDF）；HTML iframe 用 postMessage 通知沙箱内滚动 */
+  const scrollPreviewTo = (pos: "top" | "bottom") => {
+    const root = previewScrollRef.current;
+    if (!root) return;
+    const iframe = root.querySelector("iframe");
+    if (iframe?.contentWindow) {
+      try {
+        iframe.contentWindow.postMessage(
+          { source: "vesadocforge", action: "scroll", to: pos },
+          "*",
+        );
+        return;
+      } catch {
+        /* 继续走普通滚动 */
+      }
+    }
+    const el =
+      root.scrollHeight > root.clientHeight + 1
+        ? root
+        : root.querySelector<HTMLElement>("[data-doc-scroll]");
+    if (!el) return;
+    el.scrollTo({
+      top: pos === "top" ? 0 : el.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
+  /** 跳到文档顶部/底部：编辑器与预览同时滚动（分屏时两边一致） */
+  const scrollDocTo = (pos: "top" | "bottom") => {
+    const editor = editorInstanceRef.current;
+    if (editor && effectiveMode !== "preview" && editable) {
+      const lineCount = editor.getModel()?.getLineCount() ?? 1;
+      editor.revealLine(pos === "top" ? 1 : lineCount);
+      editor.setPosition({
+        lineNumber: pos === "top" ? 1 : lineCount,
+        column: 1,
+      });
+      editor.setScrollPosition(
+        pos === "top" ? { scrollTop: 0 } : { scrollBottom: 0 },
+      );
+    }
+    if (effectiveMode !== "edit") scrollPreviewTo(pos);
+  };
+
+  const handleCopyDoc = async () => {
+    if (!active) return;
+    const ok = await copyText(active.content);
+    if (ok) {
+      toast({ title: "已复制文档内容", description: active.name });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "复制失败",
+        description: "浏览器拒绝了剪贴板访问，请手动全选复制",
+      });
+    }
+  };
+
+  const handleDownloadDoc = () => {
+    if (!active) return;
+    try {
+      downloadDocument(active.name, active.content, parser?.id === "pdf" ? "pdf" : "text");
+      toast({ title: "已开始下载", description: active.name });
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "下载失败",
+        description: "无法读取文件内容",
+      });
+    }
+  };
+
+  const docTools: {
+    key: string;
+    label: string;
+    icon: typeof ArrowUpToLine;
+    onClick: () => void;
+    disabled?: boolean;
+  }[] = [
+    { key: "top", label: "跳到文档顶部", icon: ArrowUpToLine, onClick: () => scrollDocTo("top") },
+    { key: "bottom", label: "跳到文档底部", icon: ArrowDownToLine, onClick: () => scrollDocTo("bottom") },
+    {
+      key: "copy",
+      label: "复制文档内容",
+      icon: Copy,
+      onClick: () => void handleCopyDoc(),
+      disabled: parser?.id === "pdf",
+    },
+    { key: "download", label: "下载文档", icon: Download, onClick: handleDownloadDoc },
+  ];
 
   const modes: { key: ViewMode; label: string; icon: typeof PenLine }[] = [
     { key: "edit", label: "编辑", icon: PenLine },
@@ -525,6 +626,27 @@ export default function App() {
           </button>
 
           {active && (
+            <div className="flex items-center gap-1 border border-border bg-background p-1">
+              {docTools.map((t) => {
+                const Icon = t.icon;
+                return (
+                  <button
+                    key={t.key}
+                    type="button"
+                    title={t.disabled ? "PDF 不支持复制文本内容" : t.label}
+                    aria-label={t.label}
+                    disabled={t.disabled}
+                    onClick={t.onClick}
+                    className="p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+                  >
+                    <Icon className="h-4 w-4" aria-hidden />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {active && (
             <div
               role="tablist"
               aria-label="视图模式"
@@ -647,6 +769,7 @@ export default function App() {
               )}
               {(effectiveMode === "preview" || effectiveMode === "split") && (
                 <div
+                  ref={previewScrollRef}
                   className={cn(
                     "h-full min-w-0 overflow-auto",
                     effectiveMode === "split" ? "w-1/2" : "w-full",
