@@ -106,7 +106,6 @@ interface RowActions {
 
 function Row({
   node,
-  depth,
   parent,
   props,
   expanded,
@@ -120,7 +119,6 @@ function Row({
   actions,
 }: {
   node: WsNode;
-  depth: number;
   parent: WsFolder | null;
   props: Props;
   expanded: Set<string>;
@@ -133,31 +131,35 @@ function Row({
   setDraft: (s: string) => void;
   actions: RowActions;
 }) {
-  const pad = { paddingLeft: `${8 + depth * 14}px` };
+  /* 缩进由嵌套 <ul> 的 pl-3.5（14px）逐级累加，行内只加固定基础内边距。
+   * 若在 li 上按 depth 加 padding，父级内边距会连同整棵子树被重复叠加，
+   * 深度越大缩进越夸张（二次方增长）。 */
   const isFolder = node.kind === "folder";
   const open = isFolder && expanded.has(node.id);
   const selectedFolder = isFolder && node.id === props.selectedId;
 
   if (editingId === node.id) {
     return (
-      <li style={pad}>
-        <InlineInput
-          initial={draft}
-          label="重命名"
-          placeholder={node.name}
-          onCommit={(name) => {
-            const siblings = parent ? parent.children : props.nodes;
-            props.onRename(node.id, uniqueName(siblings, name, node.id));
-            setEditingId(null);
-          }}
-          onCancel={() => setEditingId(null)}
-        />
+      <li>
+        <div className="pl-2">
+          <InlineInput
+            initial={draft}
+            label="重命名"
+            placeholder={node.name}
+            onCommit={(name) => {
+              const siblings = parent ? parent.children : props.nodes;
+              props.onRename(node.id, uniqueName(siblings, name, node.id));
+              setEditingId(null);
+            }}
+            onCancel={() => setEditingId(null)}
+          />
+        </div>
       </li>
     );
   }
 
   return (
-    <li style={pad}>
+    <li>
       <div
         role={isFolder ? "button" : "option"}
         aria-expanded={isFolder ? open : undefined}
@@ -186,7 +188,7 @@ function Row({
           actions.openMenu(node, e.clientX, e.clientY);
         }}
         className={cn(
-          "group flex cursor-pointer items-center gap-1.5 pr-1 py-1.5 text-sm transition-colors",
+          "group flex cursor-pointer items-center gap-1.5 py-1.5 pl-2 pr-1 text-sm transition-colors",
           !isFolder && node.id === props.activeId
             ? "bg-primary text-primary-foreground"
             : selectedFolder
@@ -217,27 +219,26 @@ function Row({
       </div>
 
       {isFolder && open && (
-        <ul role="group" className="space-y-0.5">
+        <ul role="group" className="space-y-0.5 pl-3.5">
           {creating && creating.parentId === node.id && (
-            <li style={{ paddingLeft: `${8 + (depth + 1) * 14}px` }}>
-              <InlineInput
-                initial=""
-                label={creating.kind === "file" ? "新文件名" : "新文件夹名"}
-                placeholder={creating.kind === "file" ? "如 todo.md" : "文件夹名"}
-                onCommit={(name) => {
-                  if (creating.kind === "file") props.onCreateFile(node.id, name);
-                  else props.onCreateFolder(node.id, name);
-                  setCreating(null);
-                }}
-                onCancel={() => setCreating(null)}
-              />
+            <li>
+              <div className="pl-2">
+                <InlineInput
+                  initial=""
+                  label={creating.kind === "file" ? "新文件名" : "新文件夹名"}
+                  placeholder={creating.kind === "file" ? "如 todo.md" : "文件夹名"}
+                  onCommit={(name) => {
+                    if (creating.kind === "file") props.onCreateFile(node.id, name);
+                    else props.onCreateFolder(node.id, name);
+                    setCreating(null);
+                  }}
+                  onCancel={() => setCreating(null)}
+                />
+              </div>
             </li>
           )}
           {node.children.length === 0 && !creating && (
-            <li
-              style={{ paddingLeft: `${8 + (depth + 1) * 14}px` }}
-              className="py-1 text-xs italic text-muted-foreground/70"
-            >
+            <li className="py-1 pl-2 text-xs italic text-muted-foreground/70">
               （空文件夹）
             </li>
           )}
@@ -245,7 +246,6 @@ function Row({
             <Row
               key={c.id}
               node={c}
-              depth={depth + 1}
               parent={node}
               props={props}
               expanded={expanded}
@@ -407,7 +407,6 @@ export default function FileTree(props: Props) {
           <Row
             key={n.id}
             node={n}
-            depth={0}
             parent={parentOf(n.id)}
             props={props}
             expanded={expanded}

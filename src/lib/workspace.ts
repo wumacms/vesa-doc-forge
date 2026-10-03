@@ -72,12 +72,18 @@ function mapTree(nodes: WsNode[], fn: (n: WsNode) => WsNode | null): WsNode[] {
   const out: WsNode[] = [];
   for (const n of nodes) {
     const mapped = fn(n);
-    if (!mapped) continue;
-    out.push(
-      mapped.kind === "folder" && mapped !== n
-        ? { ...mapped, children: mapTree(mapped.children, fn) }
-        : mapped,
-    );
+    if (!mapped) continue; // 命中删除：连子树一起跳过
+    if (mapped.kind !== "folder") {
+      out.push(mapped);
+      continue;
+    }
+    // 必须无条件递归子树：否则 insertChild / removeNode / renameNode
+    // 只能作用于根级节点，嵌套子目录中的操作会静默失效
+    const newChildren = mapTree(mapped.children, fn);
+    const childrenChanged =
+      newChildren.length !== mapped.children.length ||
+      newChildren.some((c, i) => c !== mapped.children[i]);
+    out.push(childrenChanged ? { ...mapped, children: newChildren } : mapped);
   }
   return out;
 }
