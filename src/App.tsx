@@ -1,20 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   PenLine,
   Columns2,
   Eye,
   Hammer,
-  Sun,
-  Moon,
-  Upload,
-  FolderUp,
   PanelLeft,
   ArrowUpToLine,
   ArrowDownToLine,
   Copy,
   Download,
 } from "lucide-react";
-import { useTheme } from "next-themes";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +25,7 @@ import { toast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import FileTree from "@/components/FileTree";
 import OutlinePane from "@/components/OutlinePane";
+import SidebarFooter from "@/components/SidebarFooter";
 import SidebarTabs, { type SidebarTab } from "@/components/SidebarTabs";
 import EditorPane, { disposeModel } from "@/components/editor/EditorPane";
 import PreviewPane from "@/components/PreviewPane";
@@ -49,7 +45,6 @@ import {
   removeNode,
   renameNode,
   saveWorkspace,
-  supportedExtensions,
   uid,
   uniqueName,
   updateFile,
@@ -96,43 +91,6 @@ function initialSidebarTab(): SidebarTab {
 // 提前注册 MonacoEnvironment，避免首次创建编辑器时才配置的竞态
 setupMonaco();
 
-const THEME_ORDER = ["light", "dark"] as const;
-const THEME_META: Record<
-  (typeof THEME_ORDER)[number],
-  { label: string; icon: typeof Sun }
-> = {
-  light: { label: "浅色主题", icon: Sun },
-  dark: { label: "深色主题", icon: Moon },
-};
-
-import { StyleSwitcher } from "@/components/StyleSwitcher";
-
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const current: (typeof THEME_ORDER)[number] =
-    theme === "dark" ? "dark" : "light";
-  const meta = THEME_META[current];
-  const Icon = meta.icon;
-  return (
-    <button
-      type="button"
-      title={meta.label}
-      aria-label={meta.label}
-      onClick={() => {
-        const idx = THEME_ORDER.indexOf(current);
-        setTheme(THEME_ORDER[(idx + 1) % THEME_ORDER.length]);
-      }}
-      className="border border-border bg-background p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-    >
-      {/* SSR/水合前固定图标，避免闪烁 */}
-      <Icon className="h-4 w-4" aria-hidden />
-      <span className="sr-only">{mounted ? meta.label : "切换主题"}</span>
-    </button>
-  );
-}
-
 /** 深度优先找到第一个文件节点（初始选中用） */
 function firstFile(nodes: WsNode[]): WsFile | null {
   for (const n of nodes) {
@@ -158,8 +116,8 @@ export default function App() {
   const [cursorLine, setCursorLine] = useState<number | null>(null);
   const editorInstanceRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [pendingDelete, setPendingDelete] = useState<WsNode | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const folderInputRef = useRef<HTMLInputElement>(null);
+  /** 页脚"清空工作区"的二次确认弹窗 */
+  const [confirmClear, setConfirmClear] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
   /** 预览区外层滚动容器（Markdown/代码等直接在其中滚动） */
   const previewScrollRef = useRef<HTMLDivElement>(null);
@@ -282,9 +240,10 @@ export default function App() {
         lineNumber: pos === "top" ? 1 : lineCount,
         column: 1,
       });
-      editor.setScrollPosition(
-        pos === "top" ? { scrollTop: 0 } : { scrollBottom: 0 },
-      );
+      // Monaco 只接受 scrollTop/scrollLeft；跳底部用超大值让编辑器自行钳制
+      editor.setScrollPosition({
+        scrollTop: pos === "top" ? 0 : Number.MAX_SAFE_INTEGER,
+      });
     }
     if (effectiveMode !== "edit") scrollPreviewTo(pos);
   };
@@ -317,23 +276,36 @@ export default function App() {
     }
   };
 
-  const docTools: {
+  type DocTool = {
     key: string;
     label: string;
     icon: typeof ArrowUpToLine;
     onClick: () => void;
     disabled?: boolean;
-  }[] = [
-    { key: "top", label: "跳到文档顶部", icon: ArrowUpToLine, onClick: () => scrollDocTo("top") },
-    { key: "bottom", label: "跳到文档底部", icon: ArrowDownToLine, onClick: () => scrollDocTo("bottom") },
+  };
+
+  /** 顶栏文档工具按语义分两组：滚动定位 / 内容导出 */
+  const docToolGroups: { key: string; tools: DocTool[] }[] = [
     {
-      key: "copy",
-      label: "复制文档内容",
-      icon: Copy,
-      onClick: () => void handleCopyDoc(),
-      disabled: parser?.id === "pdf",
+      key: "scroll",
+      tools: [
+        { key: "top", label: "跳到文档顶部", icon: ArrowUpToLine, onClick: () => scrollDocTo("top") },
+        { key: "bottom", label: "跳到文档底部", icon: ArrowDownToLine, onClick: () => scrollDocTo("bottom") },
+      ],
     },
-    { key: "download", label: "下载文档", icon: Download, onClick: handleDownloadDoc },
+    {
+      key: "export",
+      tools: [
+        {
+          key: "copy",
+          label: "复制文档内容",
+          icon: Copy,
+          onClick: () => void handleCopyDoc(),
+          disabled: parser?.id === "pdf",
+        },
+        { key: "download", label: "下载文档", icon: Download, onClick: handleDownloadDoc },
+      ],
+    },
   ];
 
   const modes: { key: ViewMode; label: string; icon: typeof PenLine }[] = [
@@ -420,6 +392,17 @@ export default function App() {
       description: ids.length > 1 ? `连同 ${ids.length} 个文件` : undefined,
     });
     setPendingDelete(null);
+  };
+
+  /** 页脚清空入口：删除全部文件和文件夹（含 Monaco model 清理） */
+  const doClearAll = () => {
+    nodes.forEach((n) => collectFileIds(n).forEach(disposeModel));
+    setNodes([]);
+    setActiveId(null);
+    setSelectedId(null);
+    setExpanded(new Set());
+    setConfirmClear(false);
+    toast({ title: "工作区已清空", description: "所有文件和文件夹均已删除" });
   };
 
   /* ---------- 持久化：nodes 变化即保存（加载完成后，防抖 400ms） ---------- */
@@ -537,13 +520,20 @@ export default function App() {
     [importFrom],
   );
 
-  const accept = useMemo(() => supportedExtensions(), []);
   const totalFiles = useMemo(
     () => nodes.reduce((s, n) => s + countFiles(n), 0),
     [nodes],
   );
 
   /* ---------- 渲染 ---------- */
+  const sidebarFooter = (
+    <SidebarFooter
+      onImport={(list) => void importFrom(list)}
+      onClearAll={() => setConfirmClear(true)}
+      clearDisabled={nodes.length === 0}
+    />
+  );
+
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
       {/* 顶栏 */}
@@ -578,71 +568,34 @@ export default function App() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            accept={accept}
-            className="hidden"
-            aria-hidden
-            onChange={(e) => {
-              if (e.target.files?.length) void importFrom(e.target.files);
-              e.target.value = "";
-            }}
-          />
-          <input
-            ref={folderInputRef}
-            type="file"
-            multiple
-            className="hidden"
-            aria-hidden
-            // @ts-expect-error 非标准属性：选择整个文件夹
-            webkitdirectory=""
-            directory=""
-            onChange={(e) => {
-              if (e.target.files?.length) void importFrom(e.target.files);
-              e.target.value = "";
-            }}
-          />
-          <button
-            type="button"
-            title="导入文件"
-            aria-label="导入文件"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1.5 border border-border bg-background px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-          >
-            <Upload className="h-4 w-4" aria-hidden />
-            <span className="hidden md:inline">导入</span>
-          </button>
-          <button
-            type="button"
-            title="导入文件夹"
-            aria-label="导入文件夹"
-            onClick={() => folderInputRef.current?.click()}
-            className="flex items-center gap-1.5 border border-border bg-background px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-          >
-            <FolderUp className="h-4 w-4" aria-hidden />
-            <span className="hidden md:inline">导入文件夹</span>
-          </button>
-
           {active && (
             <div className="flex items-center gap-1 border border-border bg-background p-1">
-              {docTools.map((t) => {
-                const Icon = t.icon;
-                return (
-                  <button
-                    key={t.key}
-                    type="button"
-                    title={t.disabled ? "PDF 不支持复制文本内容" : t.label}
-                    aria-label={t.label}
-                    disabled={t.disabled}
-                    onClick={t.onClick}
-                    className="p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
-                  >
-                    <Icon className="h-4 w-4" aria-hidden />
-                  </button>
-                );
-              })}
+              {docToolGroups.map((group, gi) => (
+                <Fragment key={group.key}>
+                  {gi > 0 && (
+                    <span
+                      className="mx-0.5 h-5 w-px shrink-0 bg-border"
+                      aria-hidden
+                    />
+                  )}
+                  {group.tools.map((t) => {
+                    const Icon = t.icon;
+                    return (
+                      <button
+                        key={t.key}
+                        type="button"
+                        title={t.disabled ? "PDF 不支持复制文本内容" : t.label}
+                        aria-label={t.label}
+                        disabled={t.disabled}
+                        onClick={t.onClick}
+                        className="flex h-7 w-7 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+                      >
+                        <Icon className="h-4 w-4" aria-hidden />
+                      </button>
+                    );
+                  })}
+                </Fragment>
+              ))}
             </div>
           )}
 
@@ -662,9 +615,10 @@ export default function App() {
                     aria-selected={effectiveMode === m.key}
                     disabled={disabled}
                     title={disabled ? "该文件类型只读" : m.label}
+                    aria-label={m.label}
                     onClick={() => setMode(m.key)}
                     className={cn(
-                      "flex items-center gap-1.5 px-3 py-1 text-sm transition-colors",
+                      "flex h-7 w-7 items-center justify-center transition-colors",
                       effectiveMode === m.key
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:bg-accent",
@@ -672,15 +626,11 @@ export default function App() {
                     )}
                   >
                     <m.icon className="h-4 w-4" aria-hidden />
-                    <span className="hidden md:inline">{m.label}</span>
                   </button>
                 );
               })}
             </div>
           )}
-
-          <StyleSwitcher />
-          <ThemeToggle />
         </div>
       </header>
 
@@ -695,6 +645,7 @@ export default function App() {
             tabs={
               <SidebarTabs value="outline" onChange={handleSidebarTab} />
             }
+            footer={sidebarFooter}
           />
         ) : (
           <FileTree
@@ -711,6 +662,7 @@ export default function App() {
             onCreateFolder={handleCreateFolder}
             onRename={handleRename}
             onRequestDelete={setPendingDelete}
+            footer={sidebarFooter}
             header={
               isMarkdown ? (
                 <SidebarTabs value="files" onChange={handleSidebarTab} />
@@ -814,6 +766,28 @@ export default function App() {
               onClick={doDelete}
             >
               删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 清空工作区确认 */}
+      <AlertDialog open={confirmClear} onOpenChange={setConfirmClear}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>清空工作区？</AlertDialogTitle>
+            <AlertDialogDescription>
+              全部 {nodes.length} 个顶层条目（共 {totalFiles} 个文件）及其文件夹将被永久删除，
+              此操作不可撤销。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={doClearAll}
+            >
+              清空
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

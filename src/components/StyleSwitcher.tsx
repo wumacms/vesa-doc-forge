@@ -27,10 +27,9 @@ export function StyleSwitcher() {
           type="button"
           title={`界面风格：${meta.label}`}
           aria-label="选择界面风格"
-          className="flex items-center gap-1.5 border border-border bg-background px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          className="p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
         >
           <Palette className="h-4 w-4" aria-hidden />
-          <span className="hidden lg:inline">{meta.label}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">

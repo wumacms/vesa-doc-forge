@@ -211,7 +211,12 @@ export interface ImportResult {
 export async function readImportedFiles(
   list: FileList | File[] | { file: File; path?: string }[],
 ): Promise<ImportResult> {
-  const entries = Array.from(list).map((it) =>
+  // 入参可能是 FileList 或两种数组，统一按 ArrayLike 取原始项再归一化
+  const raw = Array.from(list as ArrayLike<unknown>) as (
+    | File
+    | { file: File; path?: string }
+  )[];
+  const entries = raw.map((it) =>
     it instanceof File
       ? { file: it, path: relPathOf(it) }
       : { file: it.file, path: it.path ?? it.file.name },

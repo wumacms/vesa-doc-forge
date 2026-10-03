@@ -12,9 +12,11 @@ interface Props {
   activeLine: number | null;
   onJump: (index: number, item: OutlineItem) => void;
   tabs: ReactNode;
+  /** 底部页脚插槽（与文件目录视图保持一致） */
+  footer?: ReactNode;
 }
 
-export default function OutlinePane({ items, activeLine, onJump, tabs }: Props) {
+export default function OutlinePane({ items, activeLine, onJump, tabs, footer }: Props) {
   // 高亮"光标所处分节"：最后一个 line <= activeLine 的标题
   let activeIdx = -1;
   if (activeLine != null) {
@@ -61,6 +63,7 @@ export default function OutlinePane({ items, activeLine, onJump, tabs }: Props) 
           </ul>
         )}
       </nav>
+      {footer}
     </aside>
   );
 }

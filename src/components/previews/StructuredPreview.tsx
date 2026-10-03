@@ -96,7 +96,9 @@ export function StructuredPreview({
     }
   }, [file.content, parse]);
 
+  // tsconfig strict:false 下布尔判别属性不参与收窄，显式断言错误分支
   if (!result.ok) {
+    const message = (result as { ok: false; error: string }).error;
     return (
       <div className="space-y-3 px-8 py-6">
         <div className="flex items-start gap-2  border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
@@ -104,7 +106,7 @@ export function StructuredPreview({
           <div>
             <p className="font-semibold">{format} 解析失败</p>
             <p className="mt-1 whitespace-pre-wrap font-mono text-xs">
-              {result.error}
+              {message}
             </p>
           </div>
         </div>

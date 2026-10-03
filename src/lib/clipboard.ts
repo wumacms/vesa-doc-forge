@@ -27,7 +27,7 @@ export async function copyText(text: string): Promise<boolean> {
 }
 
 /** base64 → 二进制字节（用于 PDF 下载还原） */
-export function base64ToBytes(b64: string): Uint8Array {
+export function base64ToBytes(b64: string): Uint8Array<ArrayBuffer> {
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
