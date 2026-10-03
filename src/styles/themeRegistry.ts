@@ -15,12 +15,12 @@ export interface ThemeMeta {
   };
 }
 
-export const DEFAULT_STYLE = "docforge";
+export const DEFAULT_STYLE = "vesadocforge";
 
 export const THEME_REGISTRY: ThemeMeta[] = [
   {
-    id: "docforge",
-    label: "DocForge 默认",
+    id: "vesadocforge",
+    label: "VesaDocForge 默认",
     description: "现代极简，默认设计语言",
     previewColors: {
       light: ["#3789c4", "#ffffff"],

@@ -59,9 +59,7 @@ function workerUrlForLabel(label: string): string {
 function configureEnv(): void {
   if (configured) return;
   configured = true;
-  (
-    self as unknown as { MonacoEnvironment?: monaco.Environment }
-  ).MonacoEnvironment = {
+  (self as unknown as { MonacoEnvironment?: monaco.Environment }).MonacoEnvironment = {
     getWorker(_workerId: string, label: string) {
       const url = workerUrlForLabel(label);
       try {
@@ -71,10 +69,7 @@ function configureEnv(): void {
         // 保证 editorWorkerService 相关功能仍可用
         if (url === editorWorkerUrl) throw e;
         // eslint-disable-next-line no-console
-        console.warn(
-          `[DocForge] ${label} worker 创建失败，退回基础 worker：`,
-          e,
-        );
+        console.warn(`[VesaDocForge] ${label} worker 创建失败，退回基础 worker：`, e);
         return createModuleWorker(editorWorkerUrl);
       }
     },

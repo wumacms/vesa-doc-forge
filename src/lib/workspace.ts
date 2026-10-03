@@ -3,7 +3,7 @@ import { extOf } from "@/types";
 import { resolveParser } from "@/lib/parsers/registry";
 import { kvGet, kvSet } from "@/lib/storage";
 
-const STORAGE_KEY = "docforge.workspace.v3";
+const STORAGE_KEY = "vesadocforge.workspace.v3";
 
 export function uid(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
@@ -272,7 +272,7 @@ function seedTree(): WsNode[] {
   return [
     file(
       "README.md",
-      `# DocForge
+      `# VesaDocForge
 
 一个完全在浏览器中运行的**多格式文档工作台**。
 
@@ -303,7 +303,7 @@ $$
     file(
       "config.json",
       `{
-  "name": "docforge",
+  "name": "vesadocforge",
   "version": "2.0.0",
   "features": {
     "theme": ["light", "dark"],
@@ -365,7 +365,7 @@ services:
 <html lang="zh">
   <head><meta charset="utf-8" /><title>沙箱渲染演示</title></head>
   <body style="font-family:sans-serif;display:grid;place-items:center;min-height:90vh">
-    <h1>Hello DocForge 👋</h1>
+    <h1>Hello VesaDocForge 👋</h1>
   </body>
 </html>
 `,

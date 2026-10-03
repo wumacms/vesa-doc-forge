@@ -10,7 +10,7 @@ import {
 import { THEME_REGISTRY, getThemeMeta, type ThemeMeta } from "@/styles/themeRegistry";
 import { syncMonacoThemeWithDOM } from "@/lib/theme/themeBridge";
 
-const STYLE_KEY = "docforge:style";
+const STYLE_KEY = "vesadocforge:style";
 
 interface StyleContextValue {
   style: string;
@@ -24,11 +24,11 @@ const StyleContext = createContext<StyleContextValue | null>(null);
 
 export function StyleProvider({ children }: { children: ReactNode }) {
   const [style, setStyle] = useState<string>(() => {
-    if (typeof window === "undefined") return "docforge";
+    if (typeof window === "undefined") return "vesadocforge";
     const saved = window.localStorage.getItem(STYLE_KEY);
     return THEME_REGISTRY.some((t) => t.id === saved)
       ? (saved as string)
-      : "docforge";
+      : "vesadocforge";
   });
 
   useEffect(() => {

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* 主题令牌层（SSOT）：docforge 为 :root/.dark 兜底，其余用 [data-style] 覆盖。
+/* 主题令牌层（SSOT）：vesadocforge 为 :root/.dark 兜底，其余用 [data-style] 覆盖。
    放在 tailwindcss 之后，保证与 @theme 生成的 :root 同级联、后声明胜出。 */
-@import "./styles/themes/docforge.css";
+@import "./styles/themes/vesadocforge.css";
 @import "./styles/themes/github.css";
 @import "./styles/themes/nord.css";
 @import "./styles/themes/dracula.css";

@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DocForge · 文档工作台</title>
+    <title>VesaDocForge · 文档工作台</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
       // 首帧前注入风格属性，避免 data-style 主题闪烁（FOUC）；
       // 与 StyleContext 的 STYLE_KEY / 注册表校验保持一致。
       (function () {
         try {
-          var s = localStorage.getItem("docforge:style") || "docforge";
+          var s = localStorage.getItem("vesadocforge:style") || "vesadocforge";
           var styles = [
-            "docforge",
+            "vesadocforge",
             "github",
             "nord",
             "dracula",
@@ -23,10 +23,10 @@
             "tokyo-night",
             "zenburn",
           ];
-          if (styles.indexOf(s) < 0) s = "docforge";
+          if (styles.indexOf(s) < 0) s = "vesadocforge";
           document.documentElement.setAttribute("data-style", s);
         } catch (e) {
-          document.documentElement.setAttribute("data-style", "docforge");
+          document.documentElement.setAttribute("data-style", "vesadocforge");
         }
       })();
     </script>

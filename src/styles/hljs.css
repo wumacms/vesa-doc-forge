@@ -1,5 +1,5 @@
 /* highlight.js token 消费层：只做 class → --hljs-* 令牌映射，不定义色值。
-   色值默认在 themes/docforge.css，各风格主题按 [data-style] 级联覆盖。 */
+   色值默认在 themes/vesadocforge.css，各风格主题按 [data-style] 级联覆盖。 */
 
 pre.hljs { background: var(--hljs-bg); color: var(--hljs-fg); }
 

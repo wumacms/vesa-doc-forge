@@ -98,7 +98,7 @@ function installWorkerErrorSuppressor(): void {
       if (isNoise) {
         e.preventDefault();
         // eslint-disable-next-line no-console
-        console.warn("[DocForge] 已忽略环境注入层的 worker 错误。");
+        console.warn("[VesaDocForge] 已忽略环境注入层的 worker 错误。");
       }
     },
     true,
@@ -143,7 +143,7 @@ export function createModuleWorker(scriptUrl: string): Worker {
       e.preventDefault();
       // eslint-disable-next-line no-console
       console.warn(
-        "[DocForge] worker 启动失败，已回退到主线程执行：",
+        "[VesaDocForge] worker 启动失败，已回退到主线程执行：",
         e.message,
       );
     },

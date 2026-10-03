@@ -1,10 +1,10 @@
-# DocForge 产品需求文档（PRD）
+# VesaDocForge 产品需求文档（PRD）
 
 > 版本：2.0 · 状态：已实现 · 最后更新：随代码仓库同步
 
 ## 1. 产品概述
 
-DocForge 是一个**完全在浏览器中运行的多格式文档工作台**，无需后端服务。用户可以在本地创建、组织、编辑和预览多种格式的文档，所有数据持久化在浏览器本地存储中。
+VesaDocForge 是一个**完全在浏览器中运行的多格式文档工作台**，无需后端服务。用户可以在本地创建、组织、编辑和预览多种格式的文档，所有数据持久化在浏览器本地存储中。
 
 ### 1.1 目标用户
 
@@ -51,8 +51,8 @@ DocForge 是一个**完全在浏览器中运行的多格式文档工作台**，�
 
 ### 2.4 持久化（P0）
 
-- **工作区数据（文件内容 + 文件夹结构）**：IndexedDB（库 `docforge`，store `kv`，键 `docforge.workspace.v3`），容量大，适合 PDF base64；IndexedDB 不可用时自动降级 localStorage；
-- **偏好设置**：主题（next-themes 存 localStorage `docforge.theme`）、视图模式（localStorage `docforge.mode`）、当前选中文件（localStorage `docforge.active`）；
+- **工作区数据（文件内容 + 文件夹结构）**：IndexedDB（库 `vesadocforge`，store `kv`，键 `vesadocforge.workspace.v3`），容量大，适合 PDF base64；IndexedDB 不可用时自动降级 localStorage；
+- **偏好设置**：主题（next-themes 存 localStorage `vesadocforge.theme`）、视图模式（localStorage `vesadocforge.mode`）、当前选中文件（localStorage `vesadocforge.active`）；
 - 编辑即防抖保存（400 ms），切换 / 删除 / 导入立即保存；
 - 旧版扁平 `DocFile[]` 数据自动迁移为根级文件树。
 

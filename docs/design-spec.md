@@ -1,18 +1,17 @@
-# DocForge 多主题架构设计规范说明书 (System Design Document)
+# VesaDocForge 多主题架构设计规范说明书 (System Design Document)
 
-| 文档版本   | 状态                        | 适用系统            | 核心架构模式                                       |
-| :--------- | :-------------------------- | :------------------ | :------------------------------------------------- |
-| **v1.0.0** | 评审就绪 (Ready for Review) | DocForge Web Client | CSS-First SSOT + 二维正交正交状态 + 极薄运行时桥接 |
+| 文档版本 | 状态 | 适用系统 | 核心架构模式 |
+| :--- | :--- | :--- | :--- |
+| **v1.0.0** | 评审就绪 (Ready for Review) | VesaDocForge Web Client | CSS-First SSOT + 二维正交正交状态 + 极薄运行时桥接 |
 
 ---
 
 ## 1. 概述与设计原则 (Overview & Design Principles)
 
 ### 1.1 背景与业务诉求
+VesaDocForge 是一个专注高效体验的现代文档工作台，集成了 Markdown / HTML / JSON / YAML 的编辑与多引擎实时预览能力。随着对阅读与编辑体验要求的提升，单一的默认黑白主题无法满足多样化的工作场景（如高对比度代码审阅、沉浸式夜间编辑、电子书阅读风格等）。
 
-DocForge 是一个专注高效体验的现代文档工作台，集成了 Markdown / HTML / JSON / YAML 的编辑与多引擎实时预览能力。随着对阅读与编辑体验要求的提升，单一的默认黑白主题无法满足多样化的工作场景（如高对比度代码审阅、沉浸式夜间编辑、电子书阅读风格等）。
-
-系统需要支持**多种风格主题（如 DocForge 经典、GitHub 风格、Nord 极光、Dracula 等）**，并在每种风格下均支持**亮色（Light）与暗色（Dark）**模式。
+系统需要支持**多种风格主题（如 VesaDocForge 经典、GitHub 风格、Nord 极光、Dracula 等）**，并在每种风格下均支持**亮色（Light）与暗色（Dark）**模式。
 
 ### 1.2 核心设计原则
 
@@ -42,8 +41,7 @@ DocForge 是一个专注高效体验的现代文档工作台，集成了 Markdow
    **新增一套主题 = 编写 1 个 CSS 样式文件 + 在注册表数组登记 1 项元数据**。无须侵入任何业务组件或编写子系统适配代码。
 
 ### 1.3 非目标 (Non-Goals)
-
-- **非动态用户在线取色生成器**：DocForge 是高品质工程文档工作台，内置的主题应经过精细的对比度与排版调校，不提供复杂的在线任意色盘滑块调色器。
+- **非动态用户在线取色生成器**：VesaDocForge 是高品质工程文档工作台，内置的主题应经过精细的对比度与排版调校，不提供复杂的在线任意色盘滑块调色器。
 - **非 VS Code 级别的插件热装卸系统**：内置主题数量预计为 3~8 款，无需引入复杂的微内核或外部沙箱插件协议。
 
 ---
@@ -67,13 +65,13 @@ flowchart TD
     tree["StructuredPreview.tsx"]:::file -->|硬编码 text-chart-2/5| struct["JSON/YAML 结构树"]:::consumer
 ```
 
-| 序号 | 子系统            | 源码入口                                                                                                                                  | 色彩来源                | 格式    | 切换机制与缺陷                                                               |
-| :--: | :---------------- | :---------------------------------------------------------------------------------------------------------------------------------------- | :---------------------- | :------ | :--------------------------------------------------------------------------- |
-|  1   | **宿主 UI**       | [`index.css`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/index.css)                                                     | `@theme` + `.dark` 块   | `oklch` | 依赖 `<html>` 的 `.dark` 类，未抽象风格维度                                  |
-|  2   | **代码高亮**      | [`hljs.css`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/styles/hljs.css)                                                | `:root` / `.dark` 变量  | `oklch` | 独立维护一份变量，与宿主 token 存在重复                                      |
-|  3   | **Monaco 编辑器** | [`monacoSetup.ts`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/lib/monacoSetup.ts)                                       | 硬编码 `TOKENS` 对象    | `Hex`   | **高危痛点**：由 Node 脚本预生成，新增风格必须改代码重新跑脚本，严重易不同步 |
-|  4   | **Mermaid 图表**  | [`MarkdownPreview.tsx`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/components/previews/MarkdownPreview.tsx#L23-L27)     | `initialize({ theme })` | 字符串  | **痛点**：写死 `"neutral"`，暗色模式下背景刺眼且文字不可见                   |
-|  5   | **结构化预览**    | [`StructuredPreview.tsx`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/components/previews/StructuredPreview.tsx#L40-L42) | Tailwind Utility 类     | CSS     | **痛点**：复用图表颜色 `text-chart-2` / `text-chart-5`，缺乏专门的语义映射   |
+| 序号 | 子系统 | 源码入口 | 色彩来源 | 格式 | 切换机制与缺陷 |
+| :---: | :--- | :--- | :--- | :--- | :--- |
+| 1 | **宿主 UI** | [`index.css`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/index.css) | `@theme` + `.dark` 块 | `oklch` | 依赖 `<html>` 的 `.dark` 类，未抽象风格维度 |
+| 2 | **代码高亮** | [`hljs.css`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/styles/hljs.css) | `:root` / `.dark` 变量 | `oklch` | 独立维护一份变量，与宿主 token 存在重复 |
+| 3 | **Monaco 编辑器** | [`monacoSetup.ts`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/lib/monacoSetup.ts) | 硬编码 `TOKENS` 对象 | `Hex` | **高危痛点**：由 Node 脚本预生成，新增风格必须改代码重新跑脚本，严重易不同步 |
+| 4 | **Mermaid 图表** | [`MarkdownPreview.tsx`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/components/previews/MarkdownPreview.tsx#L23-L27) | `initialize({ theme })` | 字符串 | **痛点**：写死 `"neutral"`，暗色模式下背景刺眼且文字不可见 |
+| 5 | **结构化预览** | [`StructuredPreview.tsx`](file:///Users/devlink/code/github/wumacms/vesa-doc-forge/src/components/previews/StructuredPreview.tsx#L40-L42) | Tailwind Utility 类 | CSS | **痛点**：复用图表颜色 `text-chart-2` / `text-chart-5`，缺乏专门的语义映射 |
 
 ### 2.2 方案批判与决策纠偏
 
@@ -99,11 +97,11 @@ flowchart TD
 $$\text{Active Theme} = \text{Mode} \times \text{Style}$$
 
 - **Mode（明暗维度）**：`'light' | 'dark' | 'system'`（由 `next-themes` 驱动，最终反映为 DOM 上的 class 是否含有 `.dark`）。
-- **Style（风格维度）**：`'docforge' | 'github' | 'nord' | 'dracula' | ...`（由自定义 `StyleProvider` 驱动，反映为 DOM 上的 `data-style="..."` 属性）。
+- **Style（风格维度）**：`'vesadocforge' | 'github' | 'nord' | 'dracula' | ...`（由自定义 `StyleProvider` 驱动，反映为 DOM 上的 `data-style="..."` 属性）。
 
 ```
                         ┌─────────────────── Style ───────────────────┐
-                        │   docforge   │    github    │     nord      │
+                        │   vesadocforge   │    github    │     nord      │
      ┌──────────┬───────┼──────────────┼──────────────┼───────────────┤
      │          │ light │ 默认现代浅色 │ GitHub 白底  │ 极光高明度浅蓝│
      │   Mode   ├───────┼──────────────┼──────────────┼───────────────┤
@@ -120,7 +118,7 @@ graph TB
         SP["StyleProvider (Style)"]
         LS[("localStorage")]
         NT <-->|mode: light/dark/system| LS
-        SP <-->|style: docforge/github/nord| LS
+        SP <-->|style: vesadocforge/github/nord| LS
     end
 
     subgraph DOM_Mount ["2. DOM 注入层 (HTML Root Element)"]
@@ -130,7 +128,7 @@ graph TB
     end
 
     subgraph CSS_Engine ["3. CSS 规则层 (Single Source of Truth)"]
-        T_Base["index.css (默认 docforge 样式)"]
+        T_Base["index.css (默认 vesadocforge 样式)"]
         T_Nord["themes/nord.css"]
         T_GH["themes/github.css"]
 
@@ -166,7 +164,6 @@ graph TB
 ## 4. Token 规范与 CSS 体系 (Design Tokens & Styles)
 
 ### 4.1 Token 命名与分层规范
-
 所有的 Token 均采用标准 CSS 自定义属性，挂载在 `<html>` 元素上，分为以下四组：
 
 ```
@@ -224,9 +221,9 @@ graph TB
 在 Tailwind v4 中，全局通过 `@custom-variant dark (&:where(.dark, .dark *));` 识别深色变体。为了完美兼容且拥有最清晰的 CSS 权重级联，选择器制定如下规则：
 
 ```css
-/* 1. 默认兜底主题 (DocForge)：挂载在 :root 与 .dark */
+/* 1. 默认兜底主题 (VesaDocForge)：挂载在 :root 与 .dark */
 :root {
-  --color-background: oklch(1 0 0);
+  --color-background: oklch(1.0000 0 0);
   --color-foreground: oklch(0.1884 0.0128 248.5103);
   /* ...其余默认亮色变量... */
   --mermaid-theme: neutral;
@@ -243,21 +240,21 @@ graph TB
 /* 亮色模式 (无 .dark 时) */
 [data-style="nord"] {
   --color-background: oklch(0.97 0.01 230);
-  --color-foreground: oklch(0.3 0.02 230);
-  --color-card: oklch(0.95 0.01 230);
-  --color-border: oklch(0.88 0.02 230);
-  --color-primary: oklch(0.65 0.12 230);
+  --color-foreground: oklch(0.30 0.02 230);
+  --color-card:       oklch(0.95 0.01 230);
+  --color-border:     oklch(0.88 0.02 230);
+  --color-primary:    oklch(0.65 0.12 230);
 
-  --hljs-bg: oklch(0.95 0.01 230);
-  --hljs-fg: oklch(0.3 0.02 230);
-  --hljs-keyword: oklch(0.55 0.18 300);
-  --hljs-string: oklch(0.58 0.14 140);
-  --hljs-comment: oklch(0.65 0.02 230);
+  --hljs-bg:          oklch(0.95 0.01 230);
+  --hljs-fg:          oklch(0.30 0.02 230);
+  --hljs-keyword:     oklch(0.55 0.18 300);
+  --hljs-string:      oklch(0.58 0.14 140);
+  --hljs-comment:     oklch(0.65 0.02 230);
 
-  --monaco-bg: oklch(0.97 0.01 230);
-  --monaco-fg: oklch(0.3 0.02 230);
+  --monaco-bg:          oklch(0.97 0.01 230);
+  --monaco-fg:          oklch(0.30 0.02 230);
   --monaco-line-number: oklch(0.65 0.02 230);
-  --monaco-selection: oklch(0.88 0.04 230);
+  --monaco-selection:   oklch(0.88 0.04 230);
 
   --mermaid-theme: default;
 }
@@ -265,28 +262,28 @@ graph TB
 /* 暗色模式 (有 .dark 且具有对应 style 时) */
 [data-style="nord"].dark {
   --color-background: oklch(0.22 0.02 240);
-  --color-foreground: oklch(0.9 0.01 230);
-  --color-card: oklch(0.25 0.02 240);
-  --color-border: oklch(0.32 0.02 240);
-  --color-primary: oklch(0.7 0.12 210);
+  --color-foreground: oklch(0.90 0.01 230);
+  --color-card:       oklch(0.25 0.02 240);
+  --color-border:     oklch(0.32 0.02 240);
+  --color-primary:    oklch(0.70 0.12 210);
 
-  --hljs-bg: oklch(0.2 0.02 240);
-  --hljs-fg: oklch(0.9 0.01 230);
-  --hljs-keyword: oklch(0.72 0.16 300);
-  --hljs-string: oklch(0.78 0.12 140);
-  --hljs-comment: oklch(0.55 0.02 230);
+  --hljs-bg:          oklch(0.20 0.02 240);
+  --hljs-fg:          oklch(0.90 0.01 230);
+  --hljs-keyword:     oklch(0.72 0.16 300);
+  --hljs-string:      oklch(0.78 0.12 140);
+  --hljs-comment:     oklch(0.55 0.02 230);
 
-  --monaco-bg: oklch(0.22 0.02 240);
-  --monaco-fg: oklch(0.9 0.01 230);
-  --monaco-line-number: oklch(0.5 0.02 230);
-  --monaco-selection: oklch(0.35 0.04 240);
+  --monaco-bg:          oklch(0.22 0.02 240);
+  --monaco-fg:          oklch(0.90 0.01 230);
+  --monaco-line-number: oklch(0.50 0.02 230);
+  --monaco-selection:   oklch(0.35 0.04 240);
 
   --mermaid-theme: dark;
 }
 ```
 
 > [!TIP]
-> **选择器权重优势**：`[data-style="nord"].dark` 的 CSS 权重高于单纯的 `.dark`，天然能无缝覆盖默认的暗色变量；当 `data-style="docforge"` 或未定义属性时，系统自动平滑回退到 `:root` 与 `.dark`，具备 100% 向后兼容性。
+> **选择器权重优势**：`[data-style="nord"].dark` 的 CSS 权重高于单纯的 `.dark`，天然能无缝覆盖默认的暗色变量；当 `data-style="vesadocforge"` 或未定义属性时，系统自动平滑回退到 `:root` 与 `.dark`，具备 100% 向后兼容性。
 
 ---
 
@@ -377,12 +374,10 @@ function extractComputedTokens(): ComputedThemeTokens {
   const root = document.documentElement;
   const style = getComputedStyle(root);
   const isDark = root.classList.contains("dark");
-  const styleName = root.getAttribute("data-style") || "docforge";
+  const styleName = root.getAttribute("data-style") || "vesadocforge";
 
   const getHex = (varName: string, fallbackVar: string) => {
-    const raw =
-      style.getPropertyValue(varName).trim() ||
-      style.getPropertyValue(fallbackVar).trim();
+    const raw = style.getPropertyValue(varName).trim() || style.getPropertyValue(fallbackVar).trim();
     return oklchToHex(raw);
   };
 
@@ -404,7 +399,7 @@ function extractComputedTokens(): ComputedThemeTokens {
 export function syncMonacoThemeWithDOM(): void {
   try {
     const tokens = extractComputedTokens();
-    const dynamicThemeName = `docforge-${tokens.styleName}-${tokens.isDark ? "dark" : "light"}`;
+    const dynamicThemeName = `vesadocforge-${tokens.styleName}-${tokens.isDark ? "dark" : "light"}`;
 
     // 动态注册新主题规则
     monaco.editor.defineTheme(dynamicThemeName, {
@@ -445,12 +440,7 @@ function useMermaidTheme(): string {
       const computed = getComputedStyle(document.documentElement)
         .getPropertyValue("--mermaid-theme")
         .trim();
-      setTheme(
-        computed ||
-          (document.documentElement.classList.contains("dark")
-            ? "dark"
-            : "neutral"),
-      );
+      setTheme(computed || (document.documentElement.classList.contains("dark") ? "dark" : "neutral"));
     };
 
     update();
@@ -478,11 +468,10 @@ function useMermaidTheme(): string {
 // src/styles/themeRegistry.ts
 
 export interface ThemeMeta {
-  id: string; // 对应 data-style 的值
-  label: string; // 显示名称
-  description: string; // 简要描述
-  previewColors: {
-    // 供选择器展示的色块
+  id: string;              // 对应 data-style 的值
+  label: string;           // 显示名称
+  description: string;     // 简要描述
+  previewColors: {         // 供选择器展示的色块
     light: [string, string]; // [primary, bg]
     dark: [string, string];
   };
@@ -490,8 +479,8 @@ export interface ThemeMeta {
 
 export const THEME_REGISTRY: ThemeMeta[] = [
   {
-    id: "docforge",
-    label: "DocForge (默认)",
+    id: "vesadocforge",
+    label: "VesaDocForge (默认)",
     description: "高对比度深黑与明亮蓝纯平风格",
     previewColors: {
       light: ["#2563eb", "#ffffff"],
@@ -522,9 +511,8 @@ export const THEME_REGISTRY: ThemeMeta[] = [
 ### 6.2 状态管理：`StyleProvider` 与 `useDocTheme`
 
 与现有的 `next-themes` 紧密协同：
-
 - `next-themes` 的 `ThemeProvider` 专注管理 `mode` (`light` / `dark` / `system`)。
-- `StyleProvider` 专注管理 `style` (`docforge` / `github` / `nord`)。
+- `StyleProvider` 专注管理 `style` (`vesadocforge` / `github` / `nord`)。
 - 组合导出统一的 hook `useDocTheme()`，为上层组件提供简洁友好的统一接入。
 
 ```mermaid
@@ -569,17 +557,17 @@ const StyleContext = createContext<StyleContextValue | null>(null);
 
 export function StyleProvider({ children }: { children: React.ReactNode }) {
   const [style, setStyleState] = useState<string>(() => {
-    return localStorage.getItem("docforge_style") || "docforge";
+    return localStorage.getItem("vesadocforge_style") || "vesadocforge";
   });
 
   const setStyle = (newStyle: string) => {
     setStyleState(newStyle);
-    localStorage.setItem("docforge_style", newStyle);
+    localStorage.setItem("vesadocforge_style", newStyle);
   };
 
   useEffect(() => {
     const root = document.documentElement;
-    if (style === "docforge") {
+    if (style === "vesadocforge") {
       root.removeAttribute("data-style");
     } else {
       root.setAttribute("data-style", style);
@@ -609,7 +597,6 @@ export function useDocTheme() {
 开发人员或设计人员新增一套主题时，**仅需两步**即可实现全系统生效：
 
 ### 步骤 1：新建样式文件 `src/styles/themes/<name>.css`
-
 声明该风格在亮色与暗色模式下的 CSS 变量：
 
 ```css
@@ -617,23 +604,23 @@ export function useDocTheme() {
 
 /* ─── GitHub Light ─── */
 [data-style="github"] {
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.2 0.01 260);
-  --color-card: oklch(0.98 0.005 260);
-  --color-border: oklch(0.88 0.01 260);
-  --color-primary: oklch(0.55 0.18 250);
-  --color-accent: oklch(0.94 0.02 250);
+  --color-background: oklch(1.00 0 0);
+  --color-foreground: oklch(0.20 0.01 260);
+  --color-card:       oklch(0.98 0.005 260);
+  --color-border:     oklch(0.88 0.01 260);
+  --color-primary:    oklch(0.55 0.18 250);
+  --color-accent:     oklch(0.94 0.02 250);
 
-  --hljs-bg: oklch(0.98 0.005 260);
-  --hljs-fg: oklch(0.2 0.01 260);
-  --hljs-keyword: oklch(0.55 0.22 25);
-  --hljs-string: oklch(0.45 0.15 230);
-  --hljs-comment: oklch(0.6 0.01 260);
+  --hljs-bg:          oklch(0.98 0.005 260);
+  --hljs-fg:          oklch(0.20 0.01 260);
+  --hljs-keyword:     oklch(0.55 0.22 25);
+  --hljs-string:      oklch(0.45 0.15 230);
+  --hljs-comment:     oklch(0.60 0.01 260);
 
-  --monaco-bg: oklch(1 0 0);
-  --monaco-fg: oklch(0.2 0.01 260);
+  --monaco-bg:          oklch(1.00 0 0);
+  --monaco-fg:          oklch(0.20 0.01 260);
   --monaco-line-number: oklch(0.65 0.01 260);
-  --monaco-selection: oklch(0.9 0.04 250);
+  --monaco-selection:   oklch(0.90 0.04 250);
 
   --mermaid-theme: default;
 }
@@ -642,36 +629,33 @@ export function useDocTheme() {
 [data-style="github"].dark {
   --color-background: oklch(0.18 0.01 260);
   --color-foreground: oklch(0.92 0.01 260);
-  --color-card: oklch(0.22 0.01 260);
-  --color-border: oklch(0.3 0.01 260);
-  --color-primary: oklch(0.68 0.16 250);
-  --color-accent: oklch(0.26 0.02 250);
+  --color-card:       oklch(0.22 0.01 260);
+  --color-border:     oklch(0.30 0.01 260);
+  --color-primary:    oklch(0.68 0.16 250);
+  --color-accent:     oklch(0.26 0.02 250);
 
-  --hljs-bg: oklch(0.16 0.01 260);
-  --hljs-fg: oklch(0.92 0.01 260);
-  --hljs-keyword: oklch(0.7 0.2 25);
-  --hljs-string: oklch(0.75 0.15 200);
-  --hljs-comment: oklch(0.58 0.01 260);
+  --hljs-bg:          oklch(0.16 0.01 260);
+  --hljs-fg:          oklch(0.92 0.01 260);
+  --hljs-keyword:     oklch(0.70 0.20 25);
+  --hljs-string:      oklch(0.75 0.15 200);
+  --hljs-comment:     oklch(0.58 0.01 260);
 
-  --monaco-bg: oklch(0.18 0.01 260);
-  --monaco-fg: oklch(0.92 0.01 260);
-  --monaco-line-number: oklch(0.5 0.01 260);
-  --monaco-selection: oklch(0.32 0.05 250);
+  --monaco-bg:          oklch(0.18 0.01 260);
+  --monaco-fg:          oklch(0.92 0.01 260);
+  --monaco-line-number: oklch(0.50 0.01 260);
+  --monaco-selection:   oklch(0.32 0.05 250);
 
   --mermaid-theme: dark;
 }
 ```
 
 并在 `src/index.css` 中引入：
-
 ```css
 @import "./styles/themes/github.css";
 ```
 
 ### 步骤 2：在注册表中登记
-
 在 `src/styles/themeRegistry.ts` 中加入一条对象：
-
 ```typescript
 {
   id: "github",
@@ -689,18 +673,16 @@ export function useDocTheme() {
 ## 8. 性能、容错与可靠性指标 (Performance & Reliability)
 
 ### 8.1 性能基准指标
-
 - **首屏无重排闪烁 (Zero FOUC)**：
-  在 `index.html` 的 `<head>` 中嵌入内联极小初始脚本（类似 `next-themes` 处理 class 的方式），在 DOM 绘制前立即从 `localStorage` 读取 `docforge_style` 并注入属性，确保样式在首帧绘制时即按正确主题生效。
+  在 `index.html` 的 `<head>` 中嵌入内联极小初始脚本（类似 `next-themes` 处理 class 的方式），在 DOM 绘制前立即从 `localStorage` 读取 `vesadocforge_style` 并注入属性，确保样式在首帧绘制时即按正确主题生效。
 - **内存与运算开销**：
   `oklchToHex` 单次运算耗时 $< 0.02\text{ms}$。Monaco 主题切换仅在用户主动更改配置时执行一次，开销完全可忽略。
 - **打包体积增长**：
   每套新增主题的纯 CSS 文件体积约 $\sim 1.5\text{KB}$（Gzip 后仅 $\sim 300\text{B}$），即便内置 10 套主题，总增量也不超过 $3\text{KB}$。
 
 ### 8.2 降级与容错策略 (Resiliency)
-
 1. **未知主题/配置损坏降级**：
-   若 `localStorage` 中记录了无效的 `style`（如被废弃的主题名称），`StyleProvider` 校验失败后默认回退到 `"docforge"`。
+   若 `localStorage` 中记录了无效的 `style`（如被废弃的主题名称），`StyleProvider` 校验失败后默认回退到 `"vesadocforge"`。
 2. **CSS 变量缺失保护**：
    Monaco Bridge 在提取 CSS 变量时，对每一个 `--monaco-*` 均配置了对应的 `--color-*` 兜底；即使某个第三方主题漏写了部分变量，编辑器仍能从宿主背景/前景自动计算出安全的界面表现。
 3. **Monaco 初始化时序竞争防护**：
@@ -710,10 +692,10 @@ export function useDocTheme() {
 
 ## 9. 实施路线图 (Implementation Roadmap)
 
-| 阶段                        | 任务目标                                                       | 关键产出物                                                         | 预估工时 |
-| :-------------------------- | :------------------------------------------------------------- | :----------------------------------------------------------------- | :------- |
-| **Phase 1: 基础设施**       | 建立纯数学色彩转换与 Monaco 动态桥接层                         | `colorMath.ts`, `themeBridge.ts`，彻底淘汰 `scripts/oklch2hex.cjs` | 0.5 天   |
-| **Phase 2: Token 统一**     | 规范化 `hljs.css` 与 `StructuredPreview.tsx` 的 Token 消费路径 | 消除孤立色彩声明，使其完全依托 `--hljs-*` 与 `--color-*`           | 0.5 天   |
-| **Phase 3: 状态与上下文**   | 构建 `StyleProvider`，实现与 `next-themes` 的正交组合          | `StyleContext.tsx`, `themeRegistry.ts`                             | 0.5 天   |
-| **Phase 4: 内置主题制作**   | 制作首批 3 款精品内置主题（DocForge, GitHub, Nord）            | `docforge.css`, `github.css`, `nord.css`                           | 1 天     |
-| **Phase 5: 界面交互与验证** | 在顶部导航栏提供风格选择下拉组件，进行暗色/多风格交叉回归测试  | `Header.tsx` 主题弹窗/下拉组件，E2E 验证无闪烁                     | 0.5 天   |
+| 阶段 | 任务目标 | 关键产出物 | 预估工时 |
+| :--- | :--- | :--- | :--- |
+| **Phase 1: 基础设施** | 建立纯数学色彩转换与 Monaco 动态桥接层 | `colorMath.ts`, `themeBridge.ts`，彻底淘汰 `scripts/oklch2hex.cjs` | 0.5 天 |
+| **Phase 2: Token 统一** | 规范化 `hljs.css` 与 `StructuredPreview.tsx` 的 Token 消费路径 | 消除孤立色彩声明，使其完全依托 `--hljs-*` 与 `--color-*` | 0.5 天 |
+| **Phase 3: 状态与上下文** | 构建 `StyleProvider`，实现与 `next-themes` 的正交组合 | `StyleContext.tsx`, `themeRegistry.ts` | 0.5 天 |
+| **Phase 4: 内置主题制作** | 制作首批 3 款精品内置主题（VesaDocForge, GitHub, Nord） | `vesadocforge.css`, `github.css`, `nord.css` | 1 天 |
+| **Phase 5: 界面交互与验证** | 在顶部导航栏提供风格选择下拉组件，进行暗色/多风格交叉回归测试 | `Header.tsx` 主题弹窗/下拉组件，E2E 验证无闪烁 | 0.5 天 |

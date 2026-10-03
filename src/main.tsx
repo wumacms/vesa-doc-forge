@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")!).render(
       attribute="class"
       defaultTheme="light"
       disableTransitionOnChange
-      storageKey="docforge.theme"
+      storageKey="vesadocforge.theme"
     >
       <StyleProvider>
         <App />

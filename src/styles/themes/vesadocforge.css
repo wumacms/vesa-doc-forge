@@ -1,5 +1,5 @@
 /**
- * DocForge 默认主题令牌（SSOT 兜底层）。
+ * VesaDocForge 默认主题令牌（SSOT 兜底层）。
  *
  * 说明：`--color-*` 的默认值仍由 src/index.css 的 `@theme` 与 `.dark` 提供
  * （Tailwind v4 需要 @theme 生成 utility）。本文件只承载**非 Tailwind 命名空间**

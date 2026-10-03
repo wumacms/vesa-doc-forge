@@ -4,7 +4,7 @@ objs = []
 objs.append(b"<< /Type /Catalog /Pages 2 0 R >>")
 objs.append(b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>")
 objs.append(b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >>")
-stream = b"""BT /F1 28 Tf 72 710 Td (DocForge Sample PDF) Tj ET
+stream = b"""BT /F1 28 Tf 72 710 Td (VesaDocForge Sample PDF) Tj ET
 BT /F2 14 Tf 72 680 Td (This document is rendered entirely in your browser.) Tj ET
 BT /F2 14 Tf 72 655 Td (Use the toolbar to change page and zoom level.) Tj ET
 BT /F2 12 Tf 72 620 Td (Generated locally - no server involved.) Tj ET"""

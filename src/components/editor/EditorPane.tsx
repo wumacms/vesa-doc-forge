@@ -91,7 +91,7 @@ export default function EditorPane({ file, onChange, onCursorLine, editorRef }: 
       const model = monaco.editor.createModel(
         file.content,
         lang,
-        monaco.Uri.parse(`file:///docforge/${encodeURIComponent(file.id)}`),
+        monaco.Uri.parse(`file:///vesadocforge/${encodeURIComponent(file.id)}`),
       );
       entry = { model, state: null };
       models.set(file.id, entry);

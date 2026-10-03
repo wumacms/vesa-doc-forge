@@ -23,37 +23,32 @@ export default defineConfig(({ mode }) => {
   return {
     base,
     server: {
-      host: "::",
-      port: 5173,
-      hmr: {
-        overlay: false,
-      },
-      // worker 脚本可能从 iframe realm（opaque origin）发起请求，
-      // 需要 CORP 放行，否则浏览器以 ERR_BLOCKED_BY_RESPONSE 拦截。
-      headers: {
-        "Cross-Origin-Resource-Policy": "cross-origin",
-      },
-      ...(hasEsaConfig
-        ? {
-            proxy: {
-              "/api": {
-                target: "http://127.0.0.1:18080",
-                changeOrigin: true,
-              },
+    host: "::",
+    port: 5173,
+    hmr: {
+      overlay: false,
+    },
+    // worker 脚本可能从 iframe realm（opaque origin）发起请求，
+    // 需要 CORP 放行，否则浏览器以 ERR_BLOCKED_BY_RESPONSE 拦截。
+    headers: {
+      "Cross-Origin-Resource-Policy": "cross-origin",
+    },
+    ...(hasEsaConfig
+      ? {
+          proxy: {
+            "/api": {
+              target: "http://127.0.0.1:18080",
+              changeOrigin: true,
             },
-          }
-        : {}),
+          },
+        }
+      : {}),
+  },
+  plugins: [vesaErrorReporter(), vesaDesignMode(), tailwindcss(), react()].filter(Boolean),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
     },
-    plugins: [
-      vesaErrorReporter(),
-      vesaDesignMode(),
-      tailwindcss(),
-      react(),
-    ].filter(Boolean),
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./src"),
-      },
-    },
+  },
   };
 });

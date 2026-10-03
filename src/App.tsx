@@ -52,11 +52,11 @@ import { setupMonaco, monaco } from "@/lib/monacoSetup";
 import { getPref, setPref } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
-const VIEW_MODE_KEY = "docforge:view-mode";
+const VIEW_MODE_KEY = "vesadocforge:view-mode";
 const VIEW_MODES: ViewMode[] = ["edit", "split", "preview"];
-const EXPANDED_KEY = "docforge:expanded-folders";
-const ACTIVE_KEY = "docforge:active-file";
-const SIDEBAR_KEY = "docforge:sidebar-tab";
+const EXPANDED_KEY = "vesadocforge:expanded-folders";
+const ACTIVE_KEY = "vesadocforge:active-file";
+const SIDEBAR_KEY = "vesadocforge:sidebar-tab";
 
 /** 视图模式属于用户偏好：同步从 localStorage 恢复，非法值回退分屏 */
 function initialViewMode(): ViewMode {
@@ -430,7 +430,7 @@ export default function App() {
         <div className="flex min-w-0 items-center gap-2">
           <Hammer className="h-5 w-5 shrink-0 text-primary" aria-hidden />
           <span className="font-serif text-lg font-semibold tracking-tight">
-            DocForge
+            VesaDocForge
           </span>
           {active && (
             <span className="ml-3 hidden truncate text-sm text-muted-foreground sm:inline">

@@ -56,13 +56,7 @@ function MermaidBlock({ code }: { code: string }) {
   return <div ref={ref} className="my-4 flex justify-center overflow-x-auto" />;
 }
 
-function CodeBlock({
-  className,
-  children,
-}: {
-  className?: string;
-  children?: ReactNode;
-}) {
+function CodeBlock({ className, children }: { className?: string; children?: ReactNode }) {
   const match = /language-(\w+)/.exec(className ?? "");
   const lang = match?.[1];
   const code = String(children ?? "").replace(/\n$/, "");
@@ -72,10 +66,7 @@ function CodeBlock({
   let detected: string | undefined;
   try {
     if (lang && hljs.getLanguage(lang)) {
-      html = hljs.highlight(code, {
-        language: lang,
-        ignoreIllegals: true,
-      }).value;
+      html = hljs.highlight(code, { language: lang, ignoreIllegals: true }).value;
     } else {
       const auto = hljs.highlightAuto(code);
       html = auto.value;
@@ -105,49 +96,30 @@ export default function MarkdownPreview({ file }: PreviewProps) {
   const headingId = () => `oc-${headingSeq.n++}`;
 
   return (
-    <div className="mx-auto space-y-3 px-8 py-6 text-[15px] leading-relaxed">
+    <div className="mx-auto max-w-3xl space-y-3 px-8 py-6 text-[15px] leading-relaxed">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[[rehypeKatex, { throwOnError: false }]]}
         components={{
           h1: ({ children }) => (
-            <h1
-              id={headingId()}
-              className="mt-6 border-b border-border pb-2 font-serif text-3xl font-semibold"
-            >
+            <h1 id={headingId()} className="mt-6 border-b border-border pb-2 font-serif text-3xl font-semibold">
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2
-              id={headingId()}
-              className="mt-8 font-serif text-2xl font-semibold"
-            >
-              {children}
-            </h2>
+            <h2 id={headingId()} className="mt-8 font-serif text-2xl font-semibold">{children}</h2>
           ),
           h3: ({ children }) => (
-            <h3 id={headingId()} className="mt-6 text-lg font-semibold">
-              {children}
-            </h3>
+            <h3 id={headingId()} className="mt-6 text-lg font-semibold">{children}</h3>
           ),
           h4: ({ children }) => (
-            <h4 id={headingId()} className="mt-4 text-base font-semibold">
-              {children}
-            </h4>
+            <h4 id={headingId()} className="mt-4 text-base font-semibold">{children}</h4>
           ),
           h5: ({ children }) => (
-            <h5 id={headingId()} className="mt-4 text-sm font-semibold">
-              {children}
-            </h5>
+            <h5 id={headingId()} className="mt-4 text-sm font-semibold">{children}</h5>
           ),
           h6: ({ children }) => (
-            <h6
-              id={headingId()}
-              className="mt-4 text-sm font-semibold text-muted-foreground"
-            >
-              {children}
-            </h6>
+            <h6 id={headingId()} className="mt-4 text-sm font-semibold text-muted-foreground">{children}</h6>
           ),
           p: ({ children }) => <p className="my-3">{children}</p>,
           ul: ({ children }) => (
@@ -168,8 +140,7 @@ export default function MarkdownPreview({ file }: PreviewProps) {
               children?: ReactNode;
             } & Record<string, unknown>;
             const isBlock =
-              typeof className === "string" ||
-              String(children ?? "").includes("\n");
+              typeof className === "string" || String(children ?? "").includes("\n");
             if (isBlock) {
               return <CodeBlock className={className}>{children}</CodeBlock>;
             }
@@ -200,9 +171,7 @@ export default function MarkdownPreview({ file }: PreviewProps) {
           table({ children }) {
             return (
               <div className="my-4 overflow-x-auto">
-                <table className="w-full border-collapse text-sm">
-                  {children}
-                </table>
+                <table className="w-full border-collapse text-sm">{children}</table>
               </div>
             );
           },
@@ -214,9 +183,7 @@ export default function MarkdownPreview({ file }: PreviewProps) {
             );
           },
           td({ children }) {
-            return (
-              <td className="border border-border px-3 py-2">{children}</td>
-            );
+            return <td className="border border-border px-3 py-2">{children}</td>;
           },
           hr: () => <hr className="my-6 border-border" />,
         }}

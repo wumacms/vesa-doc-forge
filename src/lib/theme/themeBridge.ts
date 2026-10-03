@@ -35,7 +35,7 @@ export interface ComputedThemeTokens {
 export function extractComputedTokens(): ComputedThemeTokens {
   const style = getComputedStyle(document.documentElement);
   return {
-    styleName: document.documentElement.getAttribute("data-style")?.trim() || "docforge",
+    styleName: document.documentElement.getAttribute("data-style")?.trim() || "vesadocforge",
     isDark: document.documentElement.classList.contains("dark"),
     bg: readVar(style, "--monaco-bg", "--color-background"),
     fg: readVar(style, "--monaco-fg", "--color-foreground"),
@@ -92,7 +92,7 @@ export function installThemeBridge(): void {
 export function syncMonacoThemeWithDOM(): void {
   try {
     const tokens = extractComputedTokens();
-    const themeName = `docforge-${tokens.styleName}-${tokens.isDark ? "dark" : "light"}`;
+    const themeName = `vesadocforge-${tokens.styleName}-${tokens.isDark ? "dark" : "light"}`;
 
     if (!registered.has(themeName)) {
       monaco.editor.defineTheme(themeName, {

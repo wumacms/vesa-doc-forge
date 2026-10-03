@@ -1,4 +1,4 @@
-# DocForge
+# VesaDocForge
 
 **浏览器内的多格式文档工作台** —— 创建、组织、编辑、预览 Markdown / JSON / YAML / HTML / PDF / 代码文件，数据全部保存在本地浏览器，无后端、零上传。
 
@@ -59,10 +59,10 @@ src/
 
 | 数据 | 位置 | 键 |
 | --- | --- | --- |
-| 工作区（文件+目录） | IndexedDB `docforge` / store `kv` | `docforge.workspace.v3` |
-| 主题偏好 | localStorage | `docforge.theme` |
-| 视图模式 | localStorage | `docforge.mode` |
-| 当前选中文件 | localStorage | `docforge.active` |
+| 工作区（文件+目录） | IndexedDB `vesadocforge` / store `kv` | `vesadocforge.workspace.v3` |
+| 主题偏好 | localStorage | `vesadocforge.theme` |
+| 视图模式 | localStorage | `vesadocforge.mode` |
+| 当前选中文件 | localStorage | `vesadocforge.active` |
 
 清空浏览器站点数据会删除全部本地文档；浏览器隐私模式或禁用 IndexedDB 时自动降级 localStorage。
 

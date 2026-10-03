@@ -4,7 +4,7 @@
  * 偏好设置体量小，直接走 localStorage（next-themes 本身也用它存主题）。
  */
 
-const DB_NAME = "docforge";
+const DB_NAME = "vesadocforge";
 const STORE = "kv";
 
 function openDb(): Promise<IDBDatabase> {
@@ -95,11 +95,11 @@ export async function kvSet(key: string, value: unknown): Promise<void> {
     try {
       localStorage.setItem(key, JSON.stringify(value));
       console.warn(
-        "[DocForge] 已降级到 localStorage 持久化（IndexedDB 失败）:",
+        "[VesaDocForge] 已降级到 localStorage 持久化（IndexedDB 失败）:",
         idbErr,
       );
     } catch (lsErr) {
-      console.error("[DocForge] 持久化完全失败（IDB + localStorage 均不可用）:", {
+      console.error("[VesaDocForge] 持久化完全失败（IDB + localStorage 均不可用）:", {
         idb: idbErr,
         localStorage: lsErr,
       });
