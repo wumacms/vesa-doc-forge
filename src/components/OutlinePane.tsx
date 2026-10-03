@@ -26,9 +26,9 @@ export default function OutlinePane({ items, activeLine, onJump, tabs }: Props) 
 
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-sidebar">
-      <div className="flex items-center px-3 py-2.5">{tabs}</div>
+      <div className="flex items-center px-3 py-2.5 border-b border-border">{tabs}</div>
       <nav
-        className="min-h-0 flex-1 overflow-y-auto px-1 pb-2"
+        className="min-h-0 flex-1 overflow-y-auto p-1 pb-2"
         aria-label="文档大纲"
       >
         {items.length === 0 ? (

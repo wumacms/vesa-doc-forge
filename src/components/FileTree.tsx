@@ -353,7 +353,7 @@ export default function FileTree(props: Props) {
 
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-sidebar">
-      <div className="flex items-center justify-between px-3 py-2.5">
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
         {header ? (
           header
         ) : (
@@ -385,7 +385,7 @@ export default function FileTree(props: Props) {
 
       <ul
         ref={listRef}
-        className="flex-1 space-y-0.5 overflow-y-auto px-1 pb-2"
+        className="flex-1 space-y-0.5 overflow-y-auto p-1 pb-2"
         aria-label="文件与文件夹"
       >
         {creating && creating.parentId === null && (

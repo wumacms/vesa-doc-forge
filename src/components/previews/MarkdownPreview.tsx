@@ -96,7 +96,7 @@ export default function MarkdownPreview({ file }: PreviewProps) {
   const headingId = () => `oc-${headingSeq.n++}`;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-3 px-8 py-6 text-[15px] leading-relaxed">
+    <div className="mx-auto space-y-3 px-8 py-6 text-[15px] leading-relaxed">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[[rehypeKatex, { throwOnError: false }]]}

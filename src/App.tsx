@@ -8,6 +8,7 @@ import {
   Moon,
   Upload,
   FolderUp,
+  PanelLeft,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
@@ -22,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import FileTree from "@/components/FileTree";
 import OutlinePane from "@/components/OutlinePane";
 import SidebarTabs, { type SidebarTab } from "@/components/SidebarTabs";
@@ -143,6 +145,9 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [mode, setMode] = useState<ViewMode>(initialViewMode);
+  const isMobile = useIsMobile();
+  /** 侧边栏折叠：仅移动端暴露切换入口；桌面端始终展开 */
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>(initialSidebarTab);
   const [cursorLine, setCursorLine] = useState<number | null>(null);
   const editorInstanceRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -188,7 +193,19 @@ export default function App() {
     [active],
   );
   const editable = parser?.editable ?? false;
-  const effectiveMode: ViewMode = editable ? mode : "preview";
+  /** 移动端空间不足以承载分屏：split 一律降级为 preview */
+  const effectiveMode: ViewMode = editable
+    ? isMobile && mode === "split"
+      ? "preview"
+      : mode
+    : "preview";
+
+  /* 进入移动端时把已保存的 split 偏好自动切到 preview（离屏不反向覆盖） */
+  useEffect(() => {
+    if (isMobile) {
+      setMode((m) => (m === "split" ? "preview" : m));
+    }
+  }, [isMobile]);
 
   /* ---------- 大纲（仅 Markdown） ---------- */
   const isMarkdown = parser?.id === "markdown";
@@ -220,7 +237,10 @@ export default function App() {
 
   const modes: { key: ViewMode; label: string; icon: typeof PenLine }[] = [
     { key: "edit", label: "编辑", icon: PenLine },
-    { key: "split", label: "分屏", icon: Columns2 },
+    // 移动端不提供分屏：空间不足，且 effectiveMode 已强制降级为预览
+    ...(isMobile
+      ? []
+      : [{ key: "split" as ViewMode, label: "分屏", icon: Columns2 }]),
     { key: "preview", label: "预览", icon: Eye },
   ];
 
@@ -428,8 +448,20 @@ export default function App() {
       {/* 顶栏 */}
       <header className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-border bg-card/70 px-4">
         <div className="flex min-w-0 items-center gap-2">
+          {isMobile && (
+            <button
+              type="button"
+              title={sidebarCollapsed ? "展开侧边栏" : "折叠侧边栏"}
+              aria-label={sidebarCollapsed ? "展开侧边栏" : "折叠侧边栏"}
+              aria-expanded={!sidebarCollapsed}
+              onClick={() => setSidebarCollapsed((c) => !c)}
+              className="shrink-0 border border-border bg-background p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              <PanelLeft className="h-4 w-4" aria-hidden />
+            </button>
+          )}
           <Hammer className="h-5 w-5 shrink-0 text-primary" aria-hidden />
-          <span className="font-serif text-lg font-semibold tracking-tight">
+          <span className="hidden font-serif text-lg font-semibold tracking-tight md:inline">
             VesaDocForge
           </span>
           {active && (
@@ -532,7 +564,8 @@ export default function App() {
 
       {/* 主体 */}
       <div className="flex min-h-0 flex-1">
-        {sidebarTabEffective === "outline" ? (
+        {(!isMobile || !sidebarCollapsed) &&
+          (sidebarTabEffective === "outline" ? (
           <OutlinePane
             items={outline}
             activeLine={cursorLine}
@@ -566,7 +599,7 @@ export default function App() {
               )
             }
           />
-        )}
+        ))}
 
         <main
           ref={mainRef}

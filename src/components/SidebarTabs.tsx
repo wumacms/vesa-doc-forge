@@ -15,8 +15,8 @@ export default function SidebarTabs({
   onChange: (t: SidebarTab) => void;
 }) {
   const tabs: { key: SidebarTab; label: string; icon: typeof FolderTree }[] = [
-    { key: "files", label: "文件目录", icon: FolderTree },
-    { key: "outline", label: "文档大纲", icon: ListTree },
+    { key: "files", label: "文件", icon: FolderTree },
+    { key: "outline", label: "大纲", icon: ListTree },
   ];
   return (
     <div
