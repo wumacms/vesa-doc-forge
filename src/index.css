@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+/* 主题令牌层（SSOT）：docforge 为 :root/.dark 兜底，其余用 [data-style] 覆盖。
+   放在 tailwindcss 之后，保证与 @theme 生成的 :root 同级联、后声明胜出。 */
+@import "./styles/themes/docforge.css";
+@import "./styles/themes/github.css";
+@import "./styles/themes/nord.css";
+@import "./styles/themes/dracula.css";
+@import "./styles/themes/solarized.css";
+@import "./styles/themes/monokai.css";
+@import "./styles/themes/gruvbox.css";
+@import "./styles/themes/catppuccin.css";
+@import "./styles/themes/tokyo-night.css";
+@import "./styles/themes/zenburn.css";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: oklch(1.0000 0 0);
+  --color-foreground: oklch(0.1884 0.0128 248.5103);
+  --color-card: oklch(0.9784 0.0011 197.1387);
+  --color-card-foreground: oklch(0.1884 0.0128 248.5103);
+  --color-popover: oklch(1.0000 0 0);
+  --color-popover-foreground: oklch(0.1884 0.0128 248.5103);
+  --color-primary: oklch(0.6723 0.1606 244.9955);
+  --color-primary-foreground: oklch(1.0000 0 0);
+  --color-secondary: oklch(0.1884 0.0128 248.5103);
+  --color-secondary-foreground: oklch(1.0000 0 0);
+  --color-muted: oklch(0.9222 0.0013 286.3737);
+  --color-muted-foreground: oklch(0.1884 0.0128 248.5103);
+  --color-accent: oklch(0.9392 0.0166 250.8453);
+  --color-accent-foreground: oklch(0.6723 0.1606 244.9955);
+  --color-destructive: oklch(0.6188 0.2376 25.7658);
+  --color-destructive-foreground: oklch(1.0000 0 0);
+  --color-border: oklch(0.9317 0.0118 231.6594);
+  --color-input: oklch(0.9809 0.0025 228.7836);
+  --color-ring: oklch(0.6818 0.1584 243.3540);
+  --color-sidebar: oklch(0.9784 0.0011 197.1387);
+  --color-sidebar-foreground: oklch(0.1884 0.0128 248.5103);
+  --color-sidebar-primary: oklch(0.6723 0.1606 244.9955);
+  --color-sidebar-primary-foreground: oklch(1.0000 0 0);
+  --color-sidebar-accent: oklch(0.9392 0.0166 250.8453);
+  --color-sidebar-accent-foreground: oklch(0.6723 0.1606 244.9955);
+  --color-sidebar-border: oklch(0.9271 0.0101 238.5177);
+  --color-sidebar-ring: oklch(0.6818 0.1584 243.3540);
+  --color-chart-1: oklch(0.6723 0.1606 244.9955);
+  --color-chart-2: oklch(0.6907 0.1554 160.3454);
+  --color-chart-3: oklch(0.8214 0.1600 82.5337);
+  --color-chart-4: oklch(0.7064 0.1822 151.7125);
+  --color-chart-5: oklch(0.5919 0.2186 10.5826);
+
+  /* 全局无圆角 */
+  --radius: 0rem;
+  --radius-lg: 0rem;
+  --radius-md: 0rem;
+  --radius-sm: 0rem;
+  --radius-xl: 0rem;
+  --radius-2xl: 0rem;
+  --radius-3xl: 0rem;
+  --spacing: 0.25rem;
+
+  --font-sans: Open Sans, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+
+  --shadow-sm: 0px 2px 0px 0px rgba(29,161,242,0.15);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dark {
+  --color-background: oklch(0 0 0);
+  --color-foreground: oklch(0.9328 0.0025 228.7857);
+  --color-card: oklch(0.2097 0.0080 274.5332);
+  --color-card-foreground: oklch(0.8853 0 0);
+  --color-popover: oklch(0 0 0);
+  --color-popover-foreground: oklch(0.9328 0.0025 228.7857);
+  --color-primary: oklch(0.6692 0.1607 245.0110);
+  --color-primary-foreground: oklch(1.0000 0 0);
+  --color-secondary: oklch(0.9622 0.0035 219.5331);
+  --color-secondary-foreground: oklch(0.1884 0.0128 248.5103);
+  --color-muted: oklch(0.2090 0 0);
+  --color-muted-foreground: oklch(0.5637 0.0078 247.9662);
+  --color-accent: oklch(0.1928 0.0331 242.5459);
+  --color-accent-foreground: oklch(0.6692 0.1607 245.0110);
+  --color-destructive: oklch(0.6188 0.2376 25.7658);
+  --color-destructive-foreground: oklch(1.0000 0 0);
+  --color-border: oklch(0.2674 0.0047 248.0045);
+  --color-input: oklch(0.3020 0.0288 244.8244);
+  --color-ring: oklch(0.6818 0.1584 243.3540);
+  --color-sidebar: oklch(0.2097 0.0080 274.5332);
+  --color-sidebar-foreground: oklch(0.8853 0 0);
+  --color-sidebar-primary: oklch(0.6818 0.1584 243.3540);
+  --color-sidebar-primary-foreground: oklch(1.0000 0 0);
+  --color-sidebar-accent: oklch(0.1928 0.0331 242.5459);
+  --color-sidebar-accent-foreground: oklch(0.6692 0.1607 245.0110);
+  --color-sidebar-border: oklch(0.3795 0.0220 240.5943);
+  --color-sidebar-ring: oklch(0.6818 0.1584 243.3540);
+  --color-chart-1: oklch(0.6723 0.1606 244.9955);
+  --color-chart-2: oklch(0.6907 0.1554 160.3454);
+  --color-chart-3: oklch(0.8214 0.1600 82.5337);
+  --color-chart-4: oklch(0.7064 0.1822 151.7125);
+  --color-chart-5: oklch(0.5919 0.2186 10.5826);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  /* 界面不使用任何圆角：兜底覆盖 rounded-full 等内置工具类、
+     shadcn 组件与 Monaco 内部控件的圆角 */
+  *,
+  *::before,
+  *::after {
+    border-radius: 0 !important;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

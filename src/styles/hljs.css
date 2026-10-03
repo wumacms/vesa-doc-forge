@@ -1,0 +1,108 @@
+/* highlight.js token 消费层：只做 class → --hljs-* 令牌映射，不定义色值。
+   色值默认在 themes/docforge.css，各风格主题按 [data-style] 级联覆盖。 */
+
+pre.hljs { background: var(--hljs-bg); color: var(--hljs-fg); }
+
+/* 标题栏容器内的代码：留出内边距，长行横向滚动不撑破布局 */
+.code-chrome pre.hljs {
+  padding: 0.875rem 1rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.hljs-comment, .hljs-quote { color: var(--hljs-comment); font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-section { color: var(--hljs-keyword); font-weight: 600; }
+.hljs-string, .hljs-addition { color: var(--hljs-string); }
+.hljs-number, .hljs-quote { color: var(--hljs-number); }
+.hljs-title, .hljs-title.function_, .hljs-title.class_ { color: var(--hljs-title); }
+.hljs-attr, .hljs-attribute, .hljs-property, .hljs-selector-class, .hljs-selector-id { color: var(--hljs-attr); }
+.hljs-built_in, .hljs-symbol, .hljs-bullet, .hljs-link { color: var(--hljs-built_in); }
+.hljs-literal, .hljs-type, .hljs-constant { color: var(--hljs-literal); }
+.hljs-meta, .hljs-deletion { color: var(--hljs-meta); }
+.hljs-tag { color: var(--hljs-tag); }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 700; }
+
+/* ─── 代码块标题栏（.code-chrome）─────────────────────────────
+   颜色全部派生自 --hljs-* 令牌：主题文件只需维护 hljs 色板，
+   标题栏即随 [data-style] × .dark 自动适配，无需逐主题定义。 */
+.code-chrome {
+  /* 语言标签文字：在 fg 与 comment 之间取折中，保证两种底色下均可读 */
+  --code-chrome-fg: color-mix(in oklch, var(--hljs-fg) 75%, var(--hljs-comment));
+  /* 分隔线与边框：用边框感的 comment 色做低不透明度混合 */
+  --code-chrome-border: color-mix(in oklch, var(--hljs-comment) 45%, transparent);
+  /* 标题栏底色：代码底色与正文底色之间轻微提亮/压暗 */
+  --code-chrome-bar-bg: color-mix(in oklch, var(--hljs-bg) 82%, var(--hljs-comment));
+  /* hover 底色：底色与前景色轻微混合 */
+  --code-chrome-hover: color-mix(in oklch, var(--hljs-bg) 88%, var(--hljs-fg));
+
+  margin: 1rem 0;
+  overflow: hidden;
+  border: 1px solid var(--code-chrome-border);
+}
+
+.code-chrome > pre.hljs {
+  /* 边框与圆角统一交给外层容器 */
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.code-chrome__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--code-chrome-bar-bg);
+  border-bottom: 1px solid var(--code-chrome-border);
+}
+
+.code-chrome__lang {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--code-chrome-fg);
+}
+
+.code-chrome__copy {
+  display: inline-flex;
+  shrink: 0;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--code-chrome-border);
+  border-radius: 0;
+  background: transparent;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--code-chrome-fg);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.code-chrome__copy:hover {
+  background: var(--code-chrome-hover);
+  color: var(--hljs-fg);
+}
+
+.code-chrome__copy:focus-visible {
+  outline: 2px solid var(--hljs-keyword);
+  outline-offset: 1px;
+}
+
+.code-chrome__copy--error {
+  color: var(--hljs-keyword);
+  border-color: var(--hljs-keyword);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-chrome__copy {
+    transition: none;
+  }
+}

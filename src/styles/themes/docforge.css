@@ -1,0 +1,64 @@
+/**
+ * DocForge 默认主题令牌（SSOT 兜底层）。
+ *
+ * 说明：`--color-*` 的默认值仍由 src/index.css 的 `@theme` 与 `.dark` 提供
+ * （Tailwind v4 需要 @theme 生成 utility）。本文件只承载**非 Tailwind 命名空间**
+ * 的扩展令牌：highlight.js、Monaco 桥接层与 Mermaid 引擎标识。
+ *
+ * 选择器约定（见设计规范 §4.3）：
+ * - `:root` 提供亮色默认值；
+ * - `.dark` 提供暗色默认值；
+ * 扩展风格文件用 `[data-style="x"]` / `[data-style="x"].dark` 覆盖。
+ */
+
+:root {
+  /* ── highlight.js ── */
+  --hljs-bg: oklch(0.9809 0.0025 228.7836);
+  --hljs-fg: oklch(0.27 0.015 248);
+  --hljs-comment: oklch(0.55 0.02 240);
+  --hljs-keyword: oklch(0.5 0.19 300);
+  --hljs-string: oklch(0.52 0.14 155);
+  --hljs-number: oklch(0.55 0.15 40);
+  --hljs-title: oklch(0.48 0.16 245);
+  --hljs-attr: oklch(0.55 0.15 40);
+  --hljs-built_in: oklch(0.5 0.15 200);
+  --hljs-literal: oklch(0.55 0.15 40);
+  --hljs-meta: oklch(0.5 0.02 240);
+  --hljs-tag: oklch(0.5 0.15 320);
+
+  /* ── Monaco 桥接层（缺省时回退 --color-*） ── */
+  --monaco-bg: var(--color-background);
+  --monaco-fg: var(--color-foreground);
+  --monaco-line-number: oklch(0.6769 0.0155 254.6448);
+  --monaco-line-number-active: var(--color-foreground);
+  --monaco-selection: oklch(0.88 0.04 250);
+  --monaco-line-highlight: var(--color-accent);
+  --monaco-widget-bg: var(--color-popover);
+  --monaco-widget-border: var(--color-border);
+
+  /* ── Mermaid 引擎标识 ── */
+  --mermaid-theme: neutral;
+}
+
+.dark {
+  --hljs-bg: oklch(0.19 0.006 260);
+  --hljs-fg: oklch(0.88 0.008 240);
+  --hljs-comment: oklch(0.55 0.02 240);
+  --hljs-keyword: oklch(0.78 0.15 300);
+  --hljs-string: oklch(0.8 0.13 150);
+  --hljs-number: oklch(0.8 0.13 70);
+  --hljs-title: oklch(0.78 0.13 230);
+  --hljs-attr: oklch(0.8 0.13 70);
+  --hljs-built_in: oklch(0.75 0.12 200);
+  --hljs-literal: oklch(0.8 0.13 70);
+  --hljs-meta: oklch(0.7 0.01 250);
+  --hljs-tag: oklch(0.75 0.15 320);
+
+  --monaco-line-number-active: oklch(0.9328 0.0025 228.7857);
+  --monaco-line-highlight: oklch(0.2097 0.008 274.5332);
+  --monaco-widget-bg: oklch(0.2097 0.008 274.5332);
+  --monaco-widget-border: oklch(0.24 0.008 274.5332);
+  --monaco-selection: oklch(0.32 0.05 250);
+  --monaco-line-number: oklch(0.531 0.0172 251.2851);
+  --mermaid-theme: dark;
+}

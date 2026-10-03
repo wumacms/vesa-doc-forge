@@ -1,0 +1,72 @@
+name: Deploy to GitHub Pages
+
+on:
+  # 当向 main 分支推送代码时自动触发
+  push:
+    branches:
+      - main
+  # 支持在 GitHub 仓库 Actions 标签页手动触发
+  workflow_dispatch:
+
+# 设置 GITHUB_TOKEN 的必要权限以支持发布到 GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 限制并发部署，防止多个提交同时部署导致状态错乱
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  # 构建任务
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build project
+        run: pnpm run build
+        env:
+          BASE_URL: ${{ steps.pages.outputs.base_path }}/
+
+      - name: Add 404 fallback for SPA
+        run: cp dist/index.html dist/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  # 部署任务
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

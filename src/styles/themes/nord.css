@@ -1,0 +1,131 @@
+/* ============================================================
+   Nord 极光风格（北极冰雪冷色调，官方色板经 hex → oklch 精确换算）
+   Snow Storm: #eceff4 #e5e9f0 #d8dee9
+   Polar Night: #2e3440 #3b4252 #434c5e #4c566a
+   Frost: #8fbcbb #88c0d0 #81a1c1 #5e81ac
+   Aurora: #bf616a #d08770 #ebcb8b #a3be8c #b48ead
+   ============================================================ */
+
+/* ─── Nord Light ─── */
+[data-style="nord"] {
+  --color-background: oklch(0.9513 0.0074 260.7315); /* #eceff4 */
+  --color-foreground: oklch(0.3244 0.0229 264.182); /* #2e3440 */
+  --color-card: oklch(0.933 0.0104 261.7884); /* #e5e9f0 */
+  --color-card-foreground: oklch(0.3244 0.0229 264.182);
+  --color-popover: oklch(0.9513 0.0074 260.7315);
+  --color-popover-foreground: oklch(0.3244 0.0229 264.182);
+  --color-primary: oklch(0.5944 0.0772 254.0278); /* #5e81ac */
+  --color-primary-foreground: oklch(0.9513 0.0074 260.7315);
+  --color-secondary: oklch(0.8993 0.0164 262.7492); /* #d8dee9 */
+  --color-secondary-foreground: oklch(0.3244 0.0229 264.182);
+  --color-muted: oklch(0.8993 0.0164 262.7492);
+  --color-muted-foreground: oklch(0.4523 0.0352 264.1312); /* #4c566a */
+  --color-accent: oklch(0.8993 0.0164 262.7492);
+  --color-accent-foreground: oklch(0.5944 0.0772 254.0278);
+  --color-destructive: oklch(0.6061 0.1206 15.3419); /* #bf616a */
+  --color-destructive-foreground: oklch(0.9513 0.0074 260.7315);
+  --color-border: oklch(0.8993 0.0164 262.7492);
+  --color-input: oklch(0.8993 0.0164 262.7492);
+  --color-ring: oklch(0.5944 0.0772 254.0278);
+
+  --color-sidebar: oklch(0.933 0.0104 261.7884);
+  --color-sidebar-foreground: oklch(0.3244 0.0229 264.182);
+  --color-sidebar-primary: oklch(0.5944 0.0772 254.0278);
+  --color-sidebar-primary-foreground: oklch(0.9513 0.0074 260.7315);
+  --color-sidebar-accent: oklch(0.8993 0.0164 262.7492);
+  --color-sidebar-accent-foreground: oklch(0.5944 0.0772 254.0278);
+  --color-sidebar-border: oklch(0.8993 0.0164 262.7492);
+  --color-sidebar-ring: oklch(0.5944 0.0772 254.0278);
+
+  --color-chart-1: oklch(0.7629 0.0477 194.4909); /* #8fbcbb */
+  --color-chart-2: oklch(0.7746 0.0622 217.469); /* #88c0d0 */
+  --color-chart-3: oklch(0.6965 0.0591 248.6872); /* #81a1c1 */
+  --color-chart-4: oklch(0.7683 0.0749 131.063); /* #a3be8c */
+  --color-chart-5: oklch(0.6061 0.1206 15.3419); /* #bf616a */
+
+  --hljs-bg: oklch(0.933 0.0104 261.7884);
+  --hljs-fg: oklch(0.3244 0.0229 264.182);
+  --hljs-comment: oklch(0.4523 0.0352 264.1312);
+  --hljs-keyword: oklch(0.5944 0.0772 254.0278);
+  --hljs-string: oklch(0.5944 0.0772 101.063);
+  --hljs-number: oklch(0.6061 0.1206 15.3419);
+  --hljs-title: oklch(0.5944 0.0772 254.0278);
+  --hljs-attr: oklch(0.6929 0.0963 38.2407);
+  --hljs-built_in: oklch(0.6965 0.0591 248.6872);
+  --hljs-literal: oklch(0.6921 0.0625 332.6649);
+  --hljs-meta: oklch(0.4523 0.0352 264.1312);
+  --hljs-tag: oklch(0.6061 0.1206 15.3419);
+
+  --monaco-bg: oklch(0.9513 0.0074 260.7315);
+  --monaco-fg: oklch(0.3244 0.0229 264.182);
+  --monaco-line-number: oklch(0.4523 0.0352 264.1312);
+  --monaco-line-number-active: oklch(0.3244 0.0229 264.182);
+  --monaco-selection: oklch(0.8993 0.0164 262.7492);
+  --monaco-line-highlight: oklch(0.933 0.0104 261.7884);
+  --monaco-widget-bg: oklch(0.9513 0.0074 260.7315);
+  --monaco-widget-border: oklch(0.8993 0.0164 262.7492);
+
+  --mermaid-theme: default;
+}
+
+/* ─── Nord Dark ─── */
+[data-style="nord"].dark {
+  --color-background: oklch(0.3244 0.0229 264.182); /* #2e3440 */
+  --color-foreground: oklch(0.8993 0.0164 262.7492); /* #d8dee9 */
+  --color-card: oklch(0.3792 0.029 266.4705); /* #3b4252 */
+  --color-card-foreground: oklch(0.8993 0.0164 262.7492);
+  --color-popover: oklch(0.3792 0.029 266.4705);
+  --color-popover-foreground: oklch(0.8993 0.0164 262.7492);
+  --color-primary: oklch(0.7746 0.0622 217.469); /* #88c0d0 */
+  --color-primary-foreground: oklch(0.3244 0.0229 264.182);
+  --color-secondary: oklch(0.4157 0.0324 264.1312); /* #434c5e */
+  --color-secondary-foreground: oklch(0.8993 0.0164 262.7492);
+  --color-muted: oklch(0.4157 0.0324 264.1312);
+  --color-muted-foreground: oklch(0.6251 0.0408 263.4849);
+  --color-accent: oklch(0.4157 0.0324 264.1312);
+  --color-accent-foreground: oklch(0.7746 0.0622 217.469);
+  --color-destructive: oklch(0.6061 0.1206 15.3419); /* #bf616a */
+  --color-destructive-foreground: oklch(0.9513 0.0074 260.7315);
+  --color-border: oklch(0.4157 0.0324 264.1312);
+  --color-input: oklch(0.4157 0.0324 264.1312);
+  --color-ring: oklch(0.7746 0.0622 217.469);
+
+  --color-sidebar: oklch(0.3792 0.029 266.4705);
+  --color-sidebar-foreground: oklch(0.8993 0.0164 262.7492);
+  --color-sidebar-primary: oklch(0.7746 0.0622 217.469);
+  --color-sidebar-primary-foreground: oklch(0.3244 0.0229 264.182);
+  --color-sidebar-accent: oklch(0.4157 0.0324 264.1312);
+  --color-sidebar-accent-foreground: oklch(0.7746 0.0622 217.469);
+  --color-sidebar-border: oklch(0.4157 0.0324 264.1312);
+  --color-sidebar-ring: oklch(0.7746 0.0622 217.469);
+
+  --color-chart-1: oklch(0.7629 0.0477 194.4909);
+  --color-chart-2: oklch(0.7746 0.0622 217.469);
+  --color-chart-3: oklch(0.6965 0.0591 248.6872);
+  --color-chart-4: oklch(0.7683 0.0749 131.063);
+  --color-chart-5: oklch(0.6929 0.0963 38.2407);
+
+  --hljs-bg: oklch(0.3792 0.029 266.4705);
+  --hljs-fg: oklch(0.8993 0.0164 262.7492);
+  --hljs-comment: oklch(0.6251 0.0408 263.4849);
+  --hljs-keyword: oklch(0.6965 0.0591 248.6872);
+  --hljs-string: oklch(0.7683 0.0749 131.063);
+  --hljs-number: oklch(0.6921 0.0625 332.6649);
+  --hljs-title: oklch(0.7746 0.0622 217.469);
+  --hljs-attr: oklch(0.7629 0.0477 194.4909);
+  --hljs-built_in: oklch(0.7629 0.0477 194.4909);
+  --hljs-literal: oklch(0.6929 0.0963 38.2407);
+  --hljs-meta: oklch(0.6251 0.0408 263.4849);
+  --hljs-tag: oklch(0.6061 0.1206 15.3419);
+
+  --monaco-bg: oklch(0.3244 0.0229 264.182);
+  --monaco-fg: oklch(0.8993 0.0164 262.7492);
+  --monaco-line-number: oklch(0.4523 0.0352 264.1312);
+  --monaco-line-number-active: oklch(0.8993 0.0164 262.7492);
+  --monaco-selection: oklch(0.4157 0.0324 264.1312);
+  --monaco-line-highlight: oklch(0.3792 0.029 266.4705);
+  --monaco-widget-bg: oklch(0.3792 0.029 266.4705);
+  --monaco-widget-border: oklch(0.4157 0.0324 264.1312);
+
+  --mermaid-theme: dark;
+}

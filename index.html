@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DocForge · 文档工作台</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // 首帧前注入风格属性，避免 data-style 主题闪烁（FOUC）；
+      // 与 StyleContext 的 STYLE_KEY / 注册表校验保持一致。
+      (function () {
+        try {
+          var s = localStorage.getItem("docforge:style") || "docforge";
+          var styles = [
+            "docforge",
+            "github",
+            "nord",
+            "dracula",
+            "solarized",
+            "monokai",
+            "gruvbox",
+            "catppuccin",
+            "tokyo-night",
+            "zenburn",
+          ];
+          if (styles.indexOf(s) < 0) s = "docforge";
+          document.documentElement.setAttribute("data-style", s);
+        } catch (e) {
+          document.documentElement.setAttribute("data-style", "docforge");
+        }
+      })();
+    </script>
+    <meta name="description" content="Vesa Generated Project" />
+    <meta name="author" content="Vesa" />
+
+    <meta property="og:title" content="Vesa App" />
+    <meta property="og:description" content="Vesa Generated Project" />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Vesa" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

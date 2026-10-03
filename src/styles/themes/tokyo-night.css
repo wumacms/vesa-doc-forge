@@ -1,0 +1,124 @@
+/* ============================================================
+   Tokyo Night（官方 Night / Light 色板，蓝紫霓虹）
+   由 scripts/tools/genThemeCss.cjs 生成（hex 经 oklch 精确换算）。
+   ============================================================ */
+
+/* ─── Light ─── */
+[data-style="tokyo-night"] {
+  --color-background: oklch(0.97 0.0029 264.5419); /* #f4f5f7 */
+  --color-foreground: oklch(0.3593 0.0513 273.1802); /* #343b58 */
+  --color-card: oklch(0.9374 0.0055 274.963); /* #e9eaee */
+  --color-card-foreground: oklch(0.3593 0.0513 273.1802); /* #343b58 */
+  --color-popover: oklch(1.0000 0 89.9456); /* #ffffff */
+  --color-popover-foreground: oklch(0.3593 0.0513 273.1802); /* #343b58 */
+  --color-primary: oklch(0.5107 0.1536 263.8932); /* #3760bd */
+  --color-primary-foreground: oklch(0.97 0.0029 264.5419); /* #f4f5f7 */
+  --color-secondary: oklch(0.9135 0.0068 277.1562); /* #e1e2e7 */
+  --color-secondary-foreground: oklch(0.3593 0.0513 273.1802); /* #343b58 */
+  --color-muted: oklch(0.9135 0.0068 277.1562); /* #e1e2e7 */
+  --color-muted-foreground: oklch(0.5413 0.0632 276.4087); /* #656c94 */
+  --color-accent: oklch(0.9128 0.0113 269.5427); /* #dfe2ea */
+  --color-accent-foreground: oklch(0.5107 0.1536 263.8932); /* #3760bd */
+  --color-destructive: oklch(0.5334 0.1515 14.8382); /* #b33e50 */
+  --color-destructive-foreground: oklch(1.0000 0 89.9456); /* #ffffff */
+  --color-border: oklch(0.8521 0.0215 271.1591); /* #c9cedd */
+  --color-input: oklch(0.9135 0.0068 277.1562); /* #e1e2e7 */
+  --color-ring: oklch(0.5107 0.1536 263.8932); /* #3760bd */
+  --color-sidebar: oklch(0.9374 0.0055 274.963); /* #e9eaee */
+  --color-sidebar-foreground: oklch(0.3593 0.0513 273.1802); /* #343b58 */
+  --color-sidebar-primary: oklch(0.5107 0.1536 263.8932); /* #3760bd */
+  --color-sidebar-primary-foreground: oklch(1.0000 0 89.9456); /* #ffffff */
+  --color-sidebar-accent: oklch(0.9128 0.0113 269.5427); /* #dfe2ea */
+  --color-sidebar-accent-foreground: oklch(0.5152 0.1779 299.1651); /* #7847bd */
+  --color-sidebar-border: oklch(0.8521 0.0215 271.1591); /* #c9cedd */
+  --color-sidebar-ring: oklch(0.5107 0.1536 263.8932); /* #3760bd */
+  --color-chart-1: oklch(0.5107 0.1536 263.8932); /* #3760bd */
+  --color-chart-2: oklch(0.4634 0.1172 136.0607); /* #38671c */
+  --color-chart-3: oklch(0.5334 0.1515 14.8382); /* #b33e50 */
+  --color-chart-4: oklch(0.5675 0.1263 47.6222); /* #b15c2c */
+  --color-chart-5: oklch(0.5152 0.1779 299.1651); /* #7847bd */
+
+  --hljs-bg: oklch(0.9312 0.0084 271.3246); /* #e6e8ee */
+  --hljs-fg: oklch(0.3593 0.0513 273.1802); /* #343b58 */
+  --hljs-comment: oklch(0.6894 0.039 273.4544); /* #939ab4 */
+  --hljs-keyword: oklch(0.5152 0.1779 299.1651); /* #7847bd */
+  --hljs-string: oklch(0.4634 0.1172 136.0607); /* #38671c */
+  --hljs-number: oklch(0.5675 0.1263 47.6222); /* #b15c2c */
+  --hljs-title: oklch(0.5107 0.1536 263.8932); /* #3760bd */
+  --hljs-attr: oklch(0.5675 0.1263 47.6222); /* #b15c2c */
+  --hljs-built_in: oklch(0.5321 0.0952 222.4258); /* #0f7894 */
+  --hljs-literal: oklch(0.5675 0.1263 47.6222); /* #b15c2c */
+  --hljs-meta: oklch(0.6894 0.039 273.4544); /* #939ab4 */
+  --hljs-tag: oklch(0.5334 0.1515 14.8382); /* #b33e50 */
+
+  --monaco-bg: oklch(0.97 0.0029 264.5419); /* #f4f5f7 */
+  --monaco-fg: oklch(0.3593 0.0513 273.1802); /* #343b58 */
+  --monaco-line-number: oklch(0.6734 0.0375 274.705); /* #8f95ae */
+  --monaco-line-number-active: oklch(0.3593 0.0513 273.1802); /* #343b58 */
+  --monaco-selection: oklch(0.867 0.0363 268.2605); /* #c9d3ec */
+  --monaco-line-highlight: oklch(0.9226 0.0068 277.1575); /* #e4e5ea */
+  --monaco-widget-bg: oklch(1.0000 0 89.9456); /* #ffffff */
+  --monaco-widget-border: oklch(0.8521 0.0215 271.1591); /* #c9cedd */
+
+  --mermaid-theme: default;
+}
+
+/* ─── Dark ─── */
+[data-style="tokyo-night"].dark {
+  --color-background: oklch(0.2263 0.0214 280.4871); /* #1a1b26 */
+  --color-foreground: oklch(0.8456 0.0611 274.7629); /* #c0caf5 */
+  --color-card: oklch(0.261 0.0344 274.1604); /* #1f2335 */
+  --color-card-foreground: oklch(0.8456 0.0611 274.7629); /* #c0caf5 */
+  --color-popover: oklch(0.261 0.0344 274.1604); /* #1f2335 */
+  --color-popover-foreground: oklch(0.8456 0.0611 274.7629); /* #c0caf5 */
+  --color-primary: oklch(0.719 0.1322 264.2022); /* #7aa2f7 */
+  --color-primary-foreground: oklch(0.2263 0.0214 280.4871); /* #1a1b26 */
+  --color-secondary: oklch(0.3056 0.0369 273.2268); /* #292e42 */
+  --color-secondary-foreground: oklch(0.8456 0.0611 274.7629); /* #c0caf5 */
+  --color-muted: oklch(0.3056 0.0369 273.2268); /* #292e42 */
+  --color-muted-foreground: oklch(0.767 0.0551 275.7054); /* #a9b1d7 */
+  --color-accent: oklch(0.3056 0.0369 273.2268); /* #292e42 */
+  --color-accent-foreground: oklch(0.719 0.1322 264.2022); /* #7aa2f7 */
+  --color-destructive: oklch(0.7227 0.1589 10.2758); /* #f7768e */
+  --color-destructive-foreground: oklch(0.2263 0.0214 280.4871); /* #1a1b26 */
+  --color-border: oklch(0.3867 0.0537 273.8819); /* #3b4261 */
+  --color-input: oklch(0.3056 0.0369 273.2268); /* #292e42 */
+  --color-ring: oklch(0.719 0.1322 264.2022); /* #7aa2f7 */
+  --color-sidebar: oklch(0.204 0.0158 284.9096); /* #16161e */
+  --color-sidebar-foreground: oklch(0.8456 0.0611 274.7629); /* #c0caf5 */
+  --color-sidebar-primary: oklch(0.719 0.1322 264.2022); /* #7aa2f7 */
+  --color-sidebar-primary-foreground: oklch(0.204 0.0158 284.9096); /* #16161e */
+  --color-sidebar-accent: oklch(0.3056 0.0369 273.2268); /* #292e42 */
+  --color-sidebar-accent-foreground: oklch(0.7515 0.1344 299.4992); /* #bb9af7 */
+  --color-sidebar-border: oklch(0.3867 0.0537 273.8819); /* #3b4261 */
+  --color-sidebar-ring: oklch(0.719 0.1322 264.2022); /* #7aa2f7 */
+  --color-chart-1: oklch(0.719 0.1322 264.2022); /* #7aa2f7 */
+  --color-chart-2: oklch(0.7953 0.1395 130.1364); /* #9ece6a */
+  --color-chart-3: oklch(0.7227 0.1589 10.2758); /* #f7768e */
+  --color-chart-4: oklch(0.787 0.1373 50.5574); /* #ff9e64 */
+  --color-chart-5: oklch(0.7515 0.1344 299.4992); /* #bb9af7 */
+
+  --hljs-bg: oklch(0.2819 0.0355 274.7479); /* #24283b */
+  --hljs-fg: oklch(0.8456 0.0611 274.7629); /* #c0caf5 */
+  --hljs-comment: oklch(0.4955 0.0682 274.373); /* #565f89 */
+  --hljs-keyword: oklch(0.7515 0.1344 299.4992); /* #bb9af7 */
+  --hljs-string: oklch(0.7953 0.1395 130.1364); /* #9ece6a */
+  --hljs-number: oklch(0.787 0.1373 50.5574); /* #ff9e64 */
+  --hljs-title: oklch(0.719 0.1322 264.2022); /* #7aa2f7 */
+  --hljs-attr: oklch(0.82 0.1051 235.7153); /* #7dcfff */
+  --hljs-built_in: oklch(0.82 0.1051 235.7153); /* #7dcfff */
+  --hljs-literal: oklch(0.787 0.1373 50.5574); /* #ff9e64 */
+  --hljs-meta: oklch(0.4955 0.0682 274.373); /* #565f89 */
+  --hljs-tag: oklch(0.7227 0.1589 10.2758); /* #f7768e */
+
+  --monaco-bg: oklch(0.2263 0.0214 280.4871); /* #1a1b26 */
+  --monaco-fg: oklch(0.8456 0.0611 274.7629); /* #c0caf5 */
+  --monaco-line-number: oklch(0.3867 0.0537 273.8819); /* #3b4261 */
+  --monaco-line-number-active: oklch(0.8456 0.0611 274.7629); /* #c0caf5 */
+  --monaco-selection: oklch(0.3322 0.0642 268.4474); /* #283457 */
+  --monaco-line-highlight: oklch(0.3056 0.0369 273.2268); /* #292e42 */
+  --monaco-widget-bg: oklch(0.2819 0.0355 274.7479); /* #24283b */
+  --monaco-widget-border: oklch(0.3867 0.0537 273.8819); /* #3b4261 */
+
+  --mermaid-theme: dark;
+}

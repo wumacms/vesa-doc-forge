@@ -1,0 +1,84 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+npm-shrinkwrap.json
+yarn.lock
+
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+build
+*.local
+
+# Test / coverage
+coverage
+.vitest
+*.snap.new
+
+# Env files（密钥绝不入库）
+.env
+.env.*
+!.env.example
+
+# tsc 输出（防止误跑 tsc 在模板源码上生成产物，污染镜像 / 触发 vite ESM 加载错误）
+*.tsbuildinfo
+src/**/*.js
+src/**/*.d.ts
+functions/**/*.js
+functions/**/*.d.ts
+vite.config.js
+vite.config.d.ts
+vitest.config.js
+vitest.config.d.ts
+# Vite 环境声明（合法的，必须保留）
+!src/vite-env.d.ts
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# Vite / tool caches
+.vite
+.cache
+.eslintcache
+.temp
+.tmp
+
+# Platform（保留 .vesa 配置，忽略其缓存产物）
+.vesa/cache
+.vesa/*.log
+
+# TypeScript 编译产物（src/functions 下 .ts/.tsx 是真源码，.d.ts/.js 是输出）
+src/**/*.d.ts
+src/**/*.js
+!src/vite-env.d.ts
+functions/**/*.d.ts
+functions/**/*.js
+vite.config.d.ts
+vite.config.js
+vitest.config.d.ts
+vitest.config.js
