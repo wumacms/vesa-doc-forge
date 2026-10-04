@@ -1,6 +1,8 @@
 # VesaDocForge 产品需求文档（PRD）
 
-> 版本：2.0 · 状态：已实现 · 最后更新：随代码仓库同步
+> 版本：2.1 · 状态：已实现 · 最后更新：随代码仓库同步
+>
+> 2.1 变更：新增底部状态栏（顶栏不再显示文档标题/类型）；Monaco 注册自定义 vue 语言与增强 bash/zsh 语言；highlight.js 共享配置（vue 语法复用 + shell 命令表扩充）；HTML 预览加载进度条。
 
 ## 1. 产品概述
 
@@ -34,10 +36,12 @@ VesaDocForge 是一个**完全在浏览器中运行的多格式文档工作台**
 ### 2.2 编辑与预览（P0）
 
 - Monaco 编辑器：50+ 语言语法高亮、按文件保留撤销历史与视图状态、水平滚动（不自动换行）、深浅主题与界面同步；
+  - 自定义语言：`vue`（SFC：模板/插值着色，`<script>` 嵌入 typescript、`<style>` 嵌入 css）；`bash`/`zsh`（复制内置 shell 规则并扩充常见 CLI 命令表，修复 Markdown 围栏 ```bash 因 Monaco 不识别该语言名而完全无高亮的问题）；
 - 三种视图模式：编辑 / 分屏 / 预览；
+- **底部状态栏**：主界面底端常驻，显示当前文档名、类型、视图模式、光标行号、工作区文件数与本地保存状态；顶栏只保留品牌标识与操作按钮，不再显示文档标题/类型徽章；
 - 按解析器分发预览：
-  - Markdown：GFM 渲染（表格、任务列表、代码高亮、LaTeX 公式）；
-  - HTML：`sandbox` iframe 隔离渲染；
+  - Markdown：GFM 渲染（表格、任务列表、代码高亮、LaTeX 公式）；代码块经共享 hljs 配置高亮（vue 复用 HTML/XML 语法；bash/sh/zsh 使用扩充后的命令表）；
+  - HTML：`sandbox` iframe 隔离渲染，加载期间顶部显示细进度条（onLoad 结束，15 s 超时兜底）；
   - JSON / YAML：解析后可折叠数据树，解析失败显示错误；
   - PDF：pdf.js 逐页渲染，翻页 / 缩放，只读不可编辑；
   - 代码 / 文本：highlight.js 高亮。
@@ -84,8 +88,11 @@ DocParser {
 | `src/lib/parsers/` | 解析器接口、注册表、各类型注册 |
 | `src/lib/workspace.ts` | 树操作纯函数、导入、持久化、迁移、种子 |
 | `src/lib/storage.ts` | IndexedDB 键值层 + localStorage 降级 |
-| `src/lib/monacoSetup.ts` | Monaco worker / 主题定义 |
-| `src/components/` | FileTree、EditorPane、PreviewPane、previews/* |
+| `src/lib/monacoSetup.ts` | Monaco worker / 主题定义 / 自定义语言注册入口 |
+| `src/lib/monacoVue.ts` | 自定义 vue 语言（monarch tokenizer + 嵌入 ts/css） |
+| `src/lib/monacoShell.ts` | 增强 bash / zsh 语言（扩充 CLI 命令表，修复围栏高亮） |
+| `src/lib/highlight.ts` | highlight.js 共享单例（vue 语法复用、shell built_in 扩充） |
+| `src/components/` | FileTree、EditorPane、PreviewPane、StatusBar、previews/* |
 
 ## 4. 非功能需求
 
@@ -108,4 +115,6 @@ DocParser {
 2. 删除文件夹弹出确认框，取消不删除，确认后级联删除且编辑器 model 释放；
 3. 拖入含 `.exe` 的混合文件，`.exe` 被跳过并有 toast 提示，其余正常入库；
 4. 浅色 / 深色切换时，界面、文件树、编辑器、预览区四者同步变色，无相反情况；
-5. 清空 IndexedDB 与 localStorage 后重新打开，恢复种子工作区。
+5. 清空 IndexedDB 与 localStorage 后重新打开，恢复种子工作区；
+6. Markdown 编辑器内 ```bash / ```vue 围栏代码块有语法着色，`.vue` 文件在编辑器中模板/脚本/样式分区高亮；
+7. 状态栏随编辑显示「保存中 → 已保存」，顶栏不出现文档标题与类型徽章。

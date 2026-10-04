@@ -53,7 +53,7 @@ function KindIcon({ name }: { name: string }) {
   } catch {
     k = "text";
   }
-  const cls = "h-4 w-4 shrink-0 opacity-70";
+  const cls = "mt-0.5 h-4 w-4 shrink-0 opacity-70";
   if (k === "markdown") return <FileText className={cls} aria-hidden />;
   if (k === "code") return <FileCode2 className={cls} aria-hidden />;
   if (k === "pdf") return <FileType2 className={cls} aria-hidden />;
@@ -190,7 +190,7 @@ function Row({
           actions.openMenu(node, e.clientX, e.clientY);
         }}
         className={cn(
-          "group flex cursor-pointer items-center gap-1.5 py-1.5 pl-2 pr-1 text-sm transition-colors",
+          "group flex cursor-pointer items-start gap-1.5 py-1.5 pl-2 pr-1 text-sm transition-colors",
           !isFolder && node.id === props.activeId
             ? "bg-primary text-primary-foreground"
             : selectedFolder
@@ -201,14 +201,14 @@ function Row({
         {isFolder ? (
           <>
             {open ? (
-              <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+              <ChevronDown className="mt-0.5 h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
             ) : (
-              <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+              <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
             )}
             {open ? (
-              <FolderOpen className="h-4 w-4 shrink-0 text-primary/80" aria-hidden />
+              <FolderOpen className="mt-0.5 h-4 w-4 shrink-0 text-primary/80" aria-hidden />
             ) : (
-              <Folder className="h-4 w-4 shrink-0 text-primary/80" aria-hidden />
+              <Folder className="mt-0.5 h-4 w-4 shrink-0 text-primary/80" aria-hidden />
             )}
           </>
         ) : (
@@ -217,7 +217,7 @@ function Row({
             <KindIcon name={node.name} />
           </>
         )}
-        <span className="min-w-0 flex-1 leading-snug break-all">{node.name}</span>
+        <span className="min-w-0 flex-1 break-all">{node.name}</span>
       </div>
 
       {isFolder && open && (

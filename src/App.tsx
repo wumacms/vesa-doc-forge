@@ -27,6 +27,7 @@ import FileTree from "@/components/FileTree";
 import OutlinePane from "@/components/OutlinePane";
 import SidebarFooter from "@/components/SidebarFooter";
 import SidebarTabs, { type SidebarTab } from "@/components/SidebarTabs";
+import StatusBar from "@/components/StatusBar";
 import EditorPane, { disposeModel } from "@/components/editor/EditorPane";
 import PreviewPane from "@/components/PreviewPane";
 import type { ViewMode, WsFile, WsFolder, WsNode } from "@/types";
@@ -57,6 +58,12 @@ import { cn } from "@/lib/utils";
 
 const VIEW_MODE_KEY = "vesadocforge:view-mode";
 const VIEW_MODES: ViewMode[] = ["edit", "split", "preview"];
+/** 状态栏显示的当前视图模式名 */
+const MODE_LABELS: Record<ViewMode, string> = {
+  edit: "编辑",
+  split: "分屏",
+  preview: "预览",
+};
 const EXPANDED_KEY = "vesadocforge:expanded-folders";
 const ACTIVE_KEY = "vesadocforge:active-file";
 const SIDEBAR_KEY = "vesadocforge:sidebar-tab";
@@ -406,11 +413,22 @@ export default function App() {
   };
 
   /* ---------- 持久化：nodes 变化即保存（加载完成后，防抖 400ms） ---------- */
+  /** 状态栏指示：防抖窗口内为 saving，落盘后短暂显示 saved */
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   useEffect(() => {
     if (!loaded) return;
-    const t = window.setTimeout(() => saveWorkspace(nodes), 400);
+    setSaveState("saving");
+    const t = window.setTimeout(() => {
+      saveWorkspace(nodes);
+      setSaveState("saved");
+    }, 400);
     return () => window.clearTimeout(t);
   }, [nodes, loaded]);
+  useEffect(() => {
+    if (saveState !== "saved") return;
+    const t = window.setTimeout(() => setSaveState("idle"), 1600);
+    return () => window.clearTimeout(t);
+  }, [saveState]);
 
   /* ---------- 持久化：视图模式（用户偏好，同步写 localStorage） ---------- */
   useEffect(() => {
@@ -555,16 +573,6 @@ export default function App() {
           <span className="hidden font-serif text-lg font-semibold tracking-tight md:inline">
             VesaDocForge
           </span>
-          {active && (
-            <span className="ml-3 hidden truncate text-sm text-muted-foreground sm:inline">
-              {active.name}
-            </span>
-          )}
-          {parser && (
-            <span className="ml-1 hidden shrink-0 border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground lg:inline">
-              {parser.label}
-            </span>
-          )}
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -687,6 +695,8 @@ export default function App() {
           }}
           onDrop={(e) => void handleDrop(e)}
         >
+          <div className="flex h-full flex-col">
+          <div className="min-h-0 flex-1">
           {!loaded ? (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
               正在载入工作区…
@@ -740,6 +750,17 @@ export default function App() {
               </p>
             </div>
           )}
+          </div>
+
+          <StatusBar
+            fileName={active?.name ?? null}
+            typeLabel={parser?.label ?? null}
+            modeLabel={active ? MODE_LABELS[effectiveMode] : null}
+            cursorLine={editable && (effectiveMode === "edit" || effectiveMode === "split") ? cursorLine : null}
+            totalFiles={totalFiles}
+            saveState={saveState}
+          />
+          </div>
         </main>
       </div>
 

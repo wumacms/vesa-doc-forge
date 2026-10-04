@@ -24,6 +24,8 @@ import htmlWorkerUrl from "monaco-editor/esm/vs/language/html/html.worker.js?wor
 import tsWorkerUrl from "monaco-editor/esm/vs/language/typescript/ts.worker.js?worker&url";
 import { createModuleWorker } from "@/lib/cleanWorker";
 import { registerVueLanguage } from "@/lib/monacoVue";
+import { registerShellLanguages } from "@/lib/monacoShell";
+
 
 // Monaco 0.5x ESM 构建在主线程解析个别资源 URL 时同样调用 FileAccess.toUri()；
 // 未设置 _VSCODE_FILE_ROOT 会走 AMD 的 require.toUrl() 分支而抛错。
@@ -85,6 +87,7 @@ if (typeof window !== "undefined") {
 export function setupMonaco(): typeof monaco {
   configureEnv();
   registerVueLanguage();
+  registerShellLanguages();
   return monaco;
 }
 

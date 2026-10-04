@@ -201,6 +201,9 @@ graph TB
 --hljs-title                /* 类名、函数声明名 */
 --hljs-attr                 /* 属性名、JSON Key */
 --hljs-built_in             /* 原生内置对象 (Array, Promise, Object 等) */
+--hljs-literal              /* 字面量 (true/null 等) */
+--hljs-meta                 /* 元信息 (预处理指令、frontmatter 等) */
+--hljs-tag                  /* HTML/Vue 标签定界与标签名 (.hljs-name 复用并加粗) */
 
 /* Monaco 专用 Token 清单 (由 Bridge 读取并转为 Hex) */
 --monaco-bg                 /* 编辑器视口背景 */
@@ -455,6 +458,24 @@ function useMermaidTheme(): string {
   return theme;
 }
 ```
+
+---
+
+### 5.4 编辑器/预览自定义语法层（vue · bash/zsh）
+
+高亮配置与主题桥接解耦：token 颜色仍全部来自 `--hljs-*` / themeBridge，
+新增语言只负责「产出标准 token 名」，不携带任何色值。
+
+- `src/lib/highlight.ts`：highlight.js 共享单例。hljs 无内置 vue 语法，注册为复用
+  XML/HTML 语言；bash 基于内置 grammar 扩充 `built_in` 命令表，并让 `sh`/`zsh`
+  别名指向增强版。MarkdownPreview / CodePreview / CodeBlockChrome 统一从此导入，
+  避免多处重复 registerLanguage。
+- `src/lib/monacoVue.ts`：monarch 定义 vue SFC（模板 + `{{ }}` 插值），
+  `<script>`/`<style>` 经 `nextEmbedded` 嵌入 typescript / css 内置 tokenizer。
+- `src/lib/monacoShell.ts`：显式注册 `bash`/`zsh` 语言 id。内置 markdown tokenizer
+  的围栏嵌入按「语言名 → MIME → id」解析且对未注册 id **静默退化为纯文本**，
+  Monaco 的 shell 语言不含 `bash` 别名，这是 ```bash 围栏无高亮的根因。
+- 注册入口收敛在 `setupMonaco()`（App 模块加载即执行，早于任何 model 创建）。
 
 ---
 

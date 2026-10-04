@@ -7,12 +7,13 @@
 ## 功能亮点
 
 - 🗂 **树形工作区**：任意层级文件夹，新建 / 重命名 / 级联删除（删除前确认对话框）
-- ✍️ **Monaco 编辑器**：50+ 语言语法高亮，按文件保留撤销历史，不自动换行
+- ✍️ **Monaco 编辑器**：50+ 语言语法高亮（含自定义 Vue SFC、增强 bash/zsh），按文件保留撤销历史，不自动换行
 - 👁 **按类型智能预览**：
   - Markdown → GFM 渲染（表格 / 任务列表 / 代码高亮 / LaTeX）
   - JSON / YAML → 可折叠数据树
-  - HTML → 沙箱 iframe 隔离渲染
+  - HTML → 沙箱 iframe 隔离渲染 + 加载进度条
   - PDF → pdf.js 逐页渲染 + 缩放（只读）
+- 📊 **底部状态栏**：文档名 / 类型 / 视图模式 / 光标行 / 文件数 / 保存状态一栏总览
 - 📦 **批量导入**：多选文件、整文件夹导入、拖拽导入，自动过滤不支持类型并还原目录结构
 - 🌗 **深浅主题**：界面与编辑器同步换肤，偏好持久化
 - 💾 **本地持久化**：工作区存 IndexedDB（localStorage 自动降级），偏好存 localStorage，编辑防抖保存
@@ -45,12 +46,16 @@ src/
 ├── components/
 │   ├── FileTree.tsx           # 树形文件管理器（新建/重命名/删除入口）
 │   ├── PreviewPane.tsx        # 按解析器分发预览
+│   ├── StatusBar.tsx          # 底部状态栏（文档/模式/行号/保存状态）
 │   ├── editor/EditorPane.tsx  # Monaco 封装（model 复用、主题同步）
 │   └── previews/              # Markdown / HTML / JSON-YAML / PDF / 代码预览
 ├── lib/
 │   ├── parsers/               # DocParser 接口 + 注册表 + 各类型注册
 │   ├── workspace.ts           # 树操作纯函数、导入、迁移、种子数据
 │   ├── storage.ts             # IndexedDB 键值层（localStorage 降级）
+│   ├── highlight.ts           # highlight.js 共享单例（vue 语法 + 增强 bash）
+│   ├── monacoVue.ts           # Monaco 自定义 vue 语言（SFC 高亮）
+│   ├── monacoShell.ts         # Monaco 增强 bash / zsh 语言
 │   └── monacoSetup.ts         # worker 配置与主题定义
 └── types.ts                   # WsNode / DocParser 等核心类型
 ```
@@ -83,6 +88,19 @@ registerParser({
 ```
 
 注册顺序即匹配优先级；`code` / `text` fallback 必须保持在最后。
+
+## 代码高亮体系
+
+两套引擎，共享同一份主题令牌（`--hljs-*` / `--monaco-*`，随明暗与风格联动）：
+
+- **Monaco 编辑器**：内置 50+ 语言之外，`monacoSetup.ts` 启动时注册两个自定义语言：
+  - `vue`（`monacoVue.ts`）：SFC 模板/插值着色，`<script>` 嵌入 typescript、`<style>` 嵌入 css；
+  - `bash` / `zsh`（`monacoShell.ts`）：复制内置 shell 规则并扩充常见 CLI 命令表。
+    Markdown 围栏的 fence id 按「语言名 → MIME → 语言 id」解析，Monaco 的 shell 语言
+    不认 `bash` 这个名字，未注册 id 会静默退化为纯文本——注册后 ```bash 块恢复高亮。
+- **Markdown / 代码预览**：`lib/highlight.ts` 提供 hljs 共享单例，注册 vue（复用
+  XML/HTML 语法）与增强 bash（约 80 个常用命令进 `built_in`，`sh`/`zsh` 别名同指），
+  预览组件统一从该模块导入，避免重复注册。
 
 ## 部署
 
