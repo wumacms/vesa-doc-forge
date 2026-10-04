@@ -4,7 +4,7 @@
  * 映射不到时用 highlightAuto 猜测，plaintext 直接纯文本展示。
  */
 import { useMemo } from "react";
-import hljs from "highlight.js";
+import hljs from "@/lib/highlight";
 import "@/styles/hljs.css";
 import CodeBlockChrome from "@/components/CodeBlockChrome";
 import type { PreviewProps } from "@/types";

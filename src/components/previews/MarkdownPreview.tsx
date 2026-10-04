@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import hljs from "highlight.js";
+import hljs from "@/lib/highlight";
 import { useMermaidTheme } from "@/lib/theme/mermaidTheme";
 import CodeBlockChrome from "@/components/CodeBlockChrome";
 import "katex/dist/katex.min.css";

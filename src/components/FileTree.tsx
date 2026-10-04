@@ -94,12 +94,7 @@ function InlineInput({
         aria-label={label}
         className="w-full border border-ring bg-background px-1.5 py-1 text-sm outline-none placeholder:text-muted-foreground/60"
       />
-      <button
-        type="button"
-        aria-label="确认"
-        className="p-1 text-chart-2 hover:opacity-80"
-        onClick={commit}
-      >
+      <button type="button" aria-label="确认" className="p-1 text-chart-2 hover:opacity-80" onClick={commit}>
         <Check className="h-3.5 w-3.5" />
       </button>
     </div>
@@ -206,26 +201,14 @@ function Row({
         {isFolder ? (
           <>
             {open ? (
-              <ChevronDown
-                className="h-3.5 w-3.5 shrink-0 opacity-70"
-                aria-hidden
-              />
+              <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
             ) : (
-              <ChevronRight
-                className="h-3.5 w-3.5 shrink-0 opacity-70"
-                aria-hidden
-              />
+              <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
             )}
             {open ? (
-              <FolderOpen
-                className="h-4 w-4 shrink-0 text-primary/80"
-                aria-hidden
-              />
+              <FolderOpen className="h-4 w-4 shrink-0 text-primary/80" aria-hidden />
             ) : (
-              <Folder
-                className="h-4 w-4 shrink-0 text-primary/80"
-                aria-hidden
-              />
+              <Folder className="h-4 w-4 shrink-0 text-primary/80" aria-hidden />
             )}
           </>
         ) : (
@@ -234,7 +217,7 @@ function Row({
             <KindIcon name={node.name} />
           </>
         )}
-        <span className="min-w-0 flex-1 truncate">{node.name}</span>
+        <span className="min-w-0 flex-1 leading-snug break-all">{node.name}</span>
       </div>
 
       {isFolder && open && (
@@ -245,12 +228,9 @@ function Row({
                 <InlineInput
                   initial=""
                   label={creating.kind === "file" ? "新文件名" : "新文件夹名"}
-                  placeholder={
-                    creating.kind === "file" ? "如 todo.md" : "文件夹名"
-                  }
+                  placeholder={creating.kind === "file" ? "如 todo.md" : "文件夹名"}
                   onCommit={(name) => {
-                    if (creating.kind === "file")
-                      props.onCreateFile(node.id, name);
+                    if (creating.kind === "file") props.onCreateFile(node.id, name);
                     else props.onCreateFolder(node.id, name);
                     setCreating(null);
                   }}
@@ -288,14 +268,7 @@ function Row({
 }
 
 export default function FileTree(props: Props) {
-  const {
-    nodes,
-    onCreateFile,
-    onCreateFolder,
-    onRequestDelete,
-    header,
-    footer,
-  } = props;
+  const { nodes, onCreateFile, onCreateFolder, onRequestDelete, header, footer } = props;
   const expanded = props.expanded;
   const toggleExpand = props.onToggleExpand;
   const [creating, setCreating] = useState<Creating>(null);
@@ -305,7 +278,7 @@ export default function FileTree(props: Props) {
   const listRef = useRef<HTMLUListElement>(null);
 
   const parentOf = (id: string | null): WsFolder | null =>
-    id ? (findNode(nodes, id)?.parent ?? null) : null;
+    id ? findNode(nodes, id)?.parent ?? null : null;
 
   /* ---------- 头部"新建"按钮的目标位置（VSCode 式） ----------
    * 选中文件夹 → 在其内部创建
@@ -313,8 +286,7 @@ export default function FileTree(props: Props) {
    * 无选中     → 根级
    */
   const createTarget = useMemo(() => {
-    if (!props.selectedId)
-      return { parentId: null as string | null, label: "根目录" };
+    if (!props.selectedId) return { parentId: null as string | null, label: "根目录" };
     const hit = findNode(nodes, props.selectedId);
     if (!hit) return { parentId: null as string | null, label: "根目录" };
     if (hit.node.kind === "folder") {

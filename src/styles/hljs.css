@@ -20,6 +20,9 @@ pre.hljs { background: var(--hljs-bg); color: var(--hljs-fg); }
 .hljs-literal, .hljs-type, .hljs-constant { color: var(--hljs-literal); }
 .hljs-meta, .hljs-deletion { color: var(--hljs-meta); }
 .hljs-tag { color: var(--hljs-tag); }
+/* vue/html 代码块的标签名；bash 的 $变量 */
+.hljs-name { color: var(--hljs-tag); font-weight: 600; }
+.hljs-variable { color: var(--hljs-attr); }
 .hljs-emphasis { font-style: italic; }
 .hljs-strong { font-weight: 700; }
 

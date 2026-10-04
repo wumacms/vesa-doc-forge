@@ -110,7 +110,7 @@ const CODE_LANGS: Record<string, string> = {
   less: "less",
   html: "html",
   htm: "html",
-  vue: "html",
+  vue: "vue",
   xml: "xml",
   svg: "xml",
   pom: "xml",

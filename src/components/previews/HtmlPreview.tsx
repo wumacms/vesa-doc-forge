@@ -57,13 +57,32 @@ function injectShim(html: string): string {
 
 export default function HtmlPreview({ file }: PreviewProps) {
   const [nonce, setNonce] = useState(0);
+  /** 沙箱 iframe 无法上报内部进度，用 load 事件 + 超时兜底驱动顶部进度条 */
+  const [loading, setLoading] = useState(true);
   const srcDoc = useMemo(() => injectShim(file.content), [file.content]);
 
   /* 切换文件时重置手动重渲染计数，避免复用旧 iframe 状态 */
   useEffect(() => setNonce(0), [file.id]);
 
+  /* iframe（重新）挂载后：load 事件结束进度条；15s 兜底防止 load 丢失。
+     仅切文件/重渲染时重置——编辑内容只更新 srcDoc，不重新加载页面 */
+  useEffect(() => {
+    setLoading(true);
+    const t = window.setTimeout(() => setLoading(false), 15_000);
+    return () => window.clearTimeout(t);
+  }, [file.id, nonce]);
+
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
+      {loading && (
+        <div
+          className="html-progress"
+          role="progressbar"
+          aria-label="正在加载 HTML 预览"
+        >
+          <div className="html-progress__bar" />
+        </div>
+      )}
       <div className="flex items-center justify-between border-b border-border bg-card/60 px-4 py-1.5">
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <ShieldAlert className="h-3.5 w-3.5" aria-hidden />
@@ -84,6 +103,7 @@ export default function HtmlPreview({ file }: PreviewProps) {
         srcDoc={srcDoc}
         sandbox="allow-scripts allow-forms allow-modals allow-popups"
         className="min-h-0 flex-1 border-0 bg-white"
+        onLoad={() => setLoading(false)}
       />
     </div>
   );

@@ -41,6 +41,7 @@ const LANG_LABELS: Record<string, string> = {
   json5: "JSON5",
   html: "HTML",
   xml: "XML",
+  vue: "Vue",
   css: "CSS",
   scss: "SCSS",
   less: "Less",

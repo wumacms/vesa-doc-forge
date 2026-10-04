@@ -91,6 +91,40 @@
   }
 }
 
+/* HTML 预览加载进度条：沙箱 iframe 无法上报内部进度，
+   用不确定的扫光动画表达"加载中"，load 事件或超时后淡出移除。 */
+.html-progress {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--color-border) 60%, transparent);
+}
+
+.html-progress__bar {
+  width: 35%;
+  height: 100%;
+  background: var(--color-primary);
+  animation: html-progress-sweep 1.1s ease-in-out infinite;
+}
+
+@keyframes html-progress-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(380%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .html-progress__bar {
+    animation: none;
+    width: 100%;
+    opacity: 0.6;
+  }
+}
+
 @keyframes fade-in-up {
   from {
     opacity: 0;
