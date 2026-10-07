@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import type { WsFile, WsFolder, WsNode } from "@/types";
 import { resolveParser } from "@/lib/parsers/registry";
-import { findNode, uniqueName } from "@/lib/workspace";
+import { findNode, uniqueName } from "@/lib/tree";
 import { cn } from "@/lib/utils";
 import ContextMenu, { type ContextMenuItem } from "@/components/ContextMenu";
 

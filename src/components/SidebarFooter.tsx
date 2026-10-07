@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { FolderUp, Moon, Sun, Trash2, Upload } from "lucide-react";
 import { useTheme } from "next-themes";
 import { StyleSwitcher } from "@/components/StyleSwitcher";
-import { supportedExtensions } from "@/lib/workspace";
+import { supportedExtensions } from "@/lib/importFiles";
 import { cn } from "@/lib/utils";
 
 interface Props {
