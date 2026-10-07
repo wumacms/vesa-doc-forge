@@ -4,6 +4,12 @@
 
 完整产品需求见 [docs/PRD.md](./docs/PRD.md)。
 
+## 预览
+
+![屏幕截图](./docs/images/screenshot_01.avif)
+
+![屏幕截图](./docs/images/screenshot_02.avif)
+
 ## 功能亮点
 
 - 🗂 **树形工作区**：任意层级文件夹，新建 / 重命名 / 级联删除（删除前确认对话框）
@@ -65,12 +71,12 @@ src/
 
 ## 数据存储说明
 
-| 数据 | 位置 | 键 |
-| --- | --- | --- |
+| 数据                | 位置                                  | 键                          |
+| ------------------- | ------------------------------------- | --------------------------- |
 | 工作区（文件+目录） | IndexedDB `vesadocforge` / store `kv` | `vesadocforge.workspace.v3` |
-| 主题偏好 | localStorage | `vesadocforge.theme` |
-| 视图模式 | localStorage | `vesadocforge.mode` |
-| 当前选中文件 | localStorage | `vesadocforge.active` |
+| 主题偏好            | localStorage                          | `vesadocforge.theme`        |
+| 视图模式            | localStorage                          | `vesadocforge.mode`         |
+| 当前选中文件        | localStorage                          | `vesadocforge.active`       |
 
 清空浏览器站点数据会删除全部本地文档；浏览器隐私模式或禁用 IndexedDB 时自动降级 localStorage。
 
