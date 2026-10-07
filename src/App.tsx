@@ -23,6 +23,8 @@ import {
 import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSidebarResize } from "@/hooks/useSidebarResize";
+import SidebarResizeHandle from "@/components/SidebarResizeHandle";
 import FileTree from "@/components/FileTree";
 import OutlinePane from "@/components/OutlinePane";
 import SidebarFooter from "@/components/SidebarFooter";
@@ -67,6 +69,7 @@ const MODE_LABELS: Record<ViewMode, string> = {
 const EXPANDED_KEY = "vesadocforge:expanded-folders";
 const ACTIVE_KEY = "vesadocforge:active-file";
 const SIDEBAR_KEY = "vesadocforge:sidebar-tab";
+const SIDEBAR_COLLAPSED_KEY = "vesadocforge:sidebar-collapsed";
 
 /** 视图模式属于用户偏好：同步从 localStorage 恢复，非法值回退分屏 */
 function initialViewMode(): ViewMode {
@@ -117,8 +120,11 @@ export default function App() {
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [mode, setMode] = useState<ViewMode>(initialViewMode);
   const isMobile = useIsMobile();
-  /** 侧边栏折叠：仅移动端暴露切换入口；桌面端始终展开 */
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  /** 侧边栏折叠：桌面端与移动端都可折叠，切换入口常驻顶栏；偏好持久化 */
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => getPref(SIDEBAR_COLLAPSED_KEY) === "1",
+  );
+  const sidebar = useSidebarResize();
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>(initialSidebarTab);
   const [cursorLine, setCursorLine] = useState<number | null>(null);
   const editorInstanceRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -435,6 +441,11 @@ export default function App() {
     setPref(VIEW_MODE_KEY, mode);
   }, [mode]);
 
+  /* ---------- 持久化：侧边栏折叠状态 ---------- */
+  useEffect(() => {
+    setPref(SIDEBAR_COLLAPSED_KEY, sidebarCollapsed ? "1" : "0");
+  }, [sidebarCollapsed]);
+
   /* ---------- 持久化：展开的文件夹 / 当前选中文件（加载完成后再写，避免初始空值覆盖已存偏好） ---------- */
   useEffect(() => {
     if (!loaded) return;
@@ -557,18 +568,21 @@ export default function App() {
       {/* 顶栏 */}
       <header className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-border bg-card/70 px-4">
         <div className="flex min-w-0 items-center gap-2">
-          {isMobile && (
-            <button
-              type="button"
-              title={sidebarCollapsed ? "展开侧边栏" : "折叠侧边栏"}
-              aria-label={sidebarCollapsed ? "展开侧边栏" : "折叠侧边栏"}
-              aria-expanded={!sidebarCollapsed}
-              onClick={() => setSidebarCollapsed((c) => !c)}
-              className="shrink-0 border border-border bg-background p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-            >
-              <PanelLeft className="h-4 w-4" aria-hidden />
-            </button>
-          )}
+          {/* 折叠/展开入口常驻：桌面端与移动端行为一致 */}
+          <button
+            type="button"
+            title={sidebarCollapsed ? "展开侧边栏" : "折叠侧边栏"}
+            aria-label={sidebarCollapsed ? "展开侧边栏" : "折叠侧边栏"}
+            aria-expanded={!sidebarCollapsed}
+            onClick={() => setSidebarCollapsed((c) => !c)}
+            className={cn(
+              "shrink-0 border border-border bg-background p-1.5 transition-colors hover:bg-accent hover:text-accent-foreground",
+              !sidebarCollapsed && "text-primary",
+              sidebarCollapsed && "text-muted-foreground",
+            )}
+          >
+            <PanelLeft className="h-4 w-4" aria-hidden />
+          </button>
           <Hammer className="h-5 w-5 shrink-0 text-primary" aria-hidden />
           <span className="hidden font-serif text-lg font-semibold tracking-tight md:inline">
             VesaDocForge
@@ -644,44 +658,61 @@ export default function App() {
 
       {/* 主体 */}
       <div className="flex min-h-0 flex-1">
-        {(!isMobile || !sidebarCollapsed) &&
-          (sidebarTabEffective === "outline" ? (
-          <OutlinePane
-            items={outline}
-            activeLine={cursorLine}
-            onJump={handleOutlineJump}
-            tabs={
-              <SidebarTabs value="outline" onChange={handleSidebarTab} />
-            }
-            footer={sidebarFooter}
-          />
-        ) : (
-          <FileTree
-            nodes={nodes}
-            activeId={activeId}
-            selectedId={selectedId}
-            onSelectNode={(node) => {
-              setSelectedId(node.id);
-              if (node.kind === "file") setActiveId(node.id);
-            }}
-            expanded={expanded}
-            onToggleExpand={toggleExpand}
-            onCreateFile={handleCreateFile}
-            onCreateFolder={handleCreateFolder}
-            onRename={handleRename}
-            onRequestDelete={setPendingDelete}
-            footer={sidebarFooter}
-            header={
-              isMarkdown ? (
-                <SidebarTabs value="files" onChange={handleSidebarTab} />
-              ) : (
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  工作区
-                </h2>
-              )
-            }
-          />
-        ))}
+        {!sidebarCollapsed && (
+          <>
+            {sidebarTabEffective === "outline" ? (
+              <OutlinePane
+                width={sidebar.width}
+                items={outline}
+                activeLine={cursorLine}
+                onJump={handleOutlineJump}
+                tabs={
+                  <SidebarTabs value="outline" onChange={handleSidebarTab} />
+                }
+                footer={sidebarFooter}
+              />
+            ) : (
+              <FileTree
+                width={sidebar.width}
+                nodes={nodes}
+                activeId={activeId}
+                selectedId={selectedId}
+                onSelectNode={(node) => {
+                  setSelectedId(node.id);
+                  if (node.kind === "file") setActiveId(node.id);
+                }}
+                expanded={expanded}
+                onToggleExpand={toggleExpand}
+                onCreateFile={handleCreateFile}
+                onCreateFolder={handleCreateFolder}
+                onRename={handleRename}
+                onRequestDelete={setPendingDelete}
+                footer={sidebarFooter}
+                header={
+                  isMarkdown ? (
+                    <SidebarTabs value="files" onChange={handleSidebarTab} />
+                  ) : (
+                    <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      工作区
+                    </h2>
+                  )
+                }
+              />
+            )}
+            {/* 移动端不做拖拽调宽：触摸易误触，且宽度按视口自适应 */}
+            {!isMobile && (
+              <SidebarResizeHandle
+                width={sidebar.width}
+                resizing={sidebar.resizing}
+                beginResize={sidebar.beginResize}
+                moveResize={sidebar.moveResize}
+                endResize={sidebar.endResize}
+                nudgeResize={sidebar.nudgeResize}
+                resetResize={sidebar.resetResize}
+              />
+            )}
+          </>
+        )}
 
         <main
           ref={mainRef}

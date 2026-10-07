@@ -47,8 +47,11 @@ src/
 │   ├── FileTree.tsx           # 树形文件管理器（新建/重命名/删除入口）
 │   ├── PreviewPane.tsx        # 按解析器分发预览
 │   ├── StatusBar.tsx          # 底部状态栏（文档/模式/行号/保存状态）
+│   ├── SidebarResizeHandle.tsx # 侧边栏拖拽调宽分隔条
 │   ├── editor/EditorPane.tsx  # Monaco 封装（model 复用、主题同步）
 │   └── previews/              # Markdown / HTML / JSON-YAML / PDF / 代码预览
+├── hooks/
+│   └── useSidebarResize.ts    # 侧边栏宽度：拖拽调整 + 持久化 + 视口钳制
 ├── lib/
 │   ├── parsers/               # DocParser 接口 + 注册表 + 各类型注册
 │   ├── workspace.ts           # 树操作纯函数、导入、迁移、种子数据

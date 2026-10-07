@@ -14,9 +14,11 @@ interface Props {
   tabs: ReactNode;
   /** 底部页脚插槽（与文件目录视图保持一致） */
   footer?: ReactNode;
+  /** 侧边栏宽度（px），由上层拖拽调整并持久化 */
+  width: number;
 }
 
-export default function OutlinePane({ items, activeLine, onJump, tabs, footer }: Props) {
+export default function OutlinePane({ items, activeLine, onJump, tabs, footer, width }: Props) {
   // 高亮"光标所处分节"：最后一个 line <= activeLine 的标题
   let activeIdx = -1;
   if (activeLine != null) {
@@ -27,7 +29,10 @@ export default function OutlinePane({ items, activeLine, onJump, tabs, footer }:
   }
 
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-sidebar">
+    <aside
+      className="flex h-full shrink-0 flex-col border-r border-border bg-sidebar"
+      style={{ width }}
+    >
       <div className="flex items-center px-3 py-2.5 border-b border-border">{tabs}</div>
       <nav
         className="min-h-0 flex-1 overflow-y-auto p-1 pb-2"

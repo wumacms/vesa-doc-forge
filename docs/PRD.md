@@ -33,8 +33,13 @@ VesaDocForge 是一个**完全在浏览器中运行的多格式文档工作台**
 - 删除：点垃圾桶图标，**必须经确认对话框**；删除文件夹时提示所含文件数量，级联删除；
 - 删除文件时同步释放 Monaco model，防止内存泄漏。
 
-### 2.2 编辑与预览（P0）
+### 2.1.1 侧边栏（P1）
 
+- 折叠/展开按钮常驻顶栏（桌面端与移动端一致），状态持久化（localStorage `vesadocforge:sidebar-collapsed`）；
+- 侧边栏与主区之间有拖拽分隔条：按住左右拖动调整宽度（200–560 px，且主区至少保留 480 px），双击复位默认 240 px，聚焦后方向键微调（Shift 加速）；宽度持久化（localStorage `vesadocforge:sidebar-width`）；
+- 移动端不提供拖拽调宽（触摸易误触），折叠入口同样常驻。
+
+### 2.2 编辑与预览（P0）
 - Monaco 编辑器：50+ 语言语法高亮、按文件保留撤销历史与视图状态、水平滚动（不自动换行）、深浅主题与界面同步；
   - 自定义语言：`vue`（SFC：模板/插值着色，`<script>` 嵌入 typescript、`<style>` 嵌入 css）；`bash`/`zsh`（复制内置 shell 规则并扩充常见 CLI 命令表，修复 Markdown 围栏 ```bash 因 Monaco 不识别该语言名而完全无高亮的问题）；
 - 三种视图模式：编辑 / 分屏 / 预览；
@@ -56,7 +61,7 @@ VesaDocForge 是一个**完全在浏览器中运行的多格式文档工作台**
 ### 2.4 持久化（P0）
 
 - **工作区数据（文件内容 + 文件夹结构）**：IndexedDB（库 `vesadocforge`，store `kv`，键 `vesadocforge.workspace.v3`），容量大，适合 PDF base64；IndexedDB 不可用时自动降级 localStorage；
-- **偏好设置**：主题（next-themes 存 localStorage `vesadocforge.theme`）、视图模式（localStorage `vesadocforge.mode`）、当前选中文件（localStorage `vesadocforge.active`）；
+- **偏好设置**：主题（next-themes 存 localStorage `vesadocforge.theme`）、视图模式（localStorage `vesadocforge.mode`）、当前选中文件（localStorage `vesadocforge.active`）、侧边栏折叠状态与宽度（`vesadocforge:sidebar-collapsed` / `vesadocforge:sidebar-width`）；
 - 编辑即防抖保存（400 ms），切换 / 删除 / 导入立即保存；
 - 旧版扁平 `DocFile[]` 数据自动迁移为根级文件树。
 
@@ -92,7 +97,8 @@ DocParser {
 | `src/lib/monacoVue.ts` | 自定义 vue 语言（monarch tokenizer + 嵌入 ts/css） |
 | `src/lib/monacoShell.ts` | 增强 bash / zsh 语言（扩充 CLI 命令表，修复围栏高亮） |
 | `src/lib/highlight.ts` | highlight.js 共享单例（vue 语法复用、shell built_in 扩充） |
-| `src/components/` | FileTree、EditorPane、PreviewPane、StatusBar、previews/* |
+| `src/components/` | FileTree、EditorPane、PreviewPane、StatusBar、SidebarResizeHandle、previews/* |
+| `src/hooks/` | useSidebarResize（侧边栏宽度拖拽 + 持久化） |
 
 ## 4. 非功能需求
 

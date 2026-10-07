@@ -40,6 +40,8 @@ interface Props {
   header?: ReactNode;
   /** 底部页脚插槽（导入/风格/主题/清空等操作入口） */
   footer?: ReactNode;
+  /** 侧边栏宽度（px），由上层拖拽调整并持久化 */
+  width: number;
 }
 
 type Creating = { parentId: string | null; kind: "file" | "folder" } | null;
@@ -268,7 +270,7 @@ function Row({
 }
 
 export default function FileTree(props: Props) {
-  const { nodes, onCreateFile, onCreateFolder, onRequestDelete, header, footer } = props;
+  const { nodes, onCreateFile, onCreateFolder, onRequestDelete, header, footer, width } = props;
   const expanded = props.expanded;
   const toggleExpand = props.onToggleExpand;
   const [creating, setCreating] = useState<Creating>(null);
@@ -354,7 +356,10 @@ export default function FileTree(props: Props) {
   };
 
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-sidebar">
+    <aside
+      className="flex h-full shrink-0 flex-col border-r border-border bg-sidebar"
+      style={{ width }}
+    >
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
         {header ? (
           header
